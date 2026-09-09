@@ -30,3 +30,10 @@ Alle beschikbare functies en functie documentatie kun je hier vinden:
 <!-- documentatie URL is nog te maken -->
 ...
 
+# Installatie
+
+```
+git clone git@github.com:Regionaal-Archief-Rivierenland/playmais.git && sudo pip install . 
+```
+
+(of zonder sudo als je het voor je gebruiker wilt houden, of met `uv`, etc.) 

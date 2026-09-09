@@ -1,6 +1,6 @@
 # Playmais - MAIS Playwright library (en scripts)
 
-Playmaisis een op playwright-gebasseerde python library om MAIS aan te sturen.
+Playmais is een op playwright-gebaseerde python library om MAIS aan te sturen.
 
 Simpel voorbeeld:
 

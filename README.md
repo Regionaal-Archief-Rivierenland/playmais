@@ -15,13 +15,17 @@ with sync_playwright() as playwright:
 
     # login en upload
     playmais.login(page)
+
     # upload gecorrigeerde toegang
-    playmais.upload_maisxml(page, "/srv/share/maisxml/1843_1_102_flexis.txt")
-    # download wat we net geupload hebben
-    playmais.download_maisxml(page, toegang="1843")
+    upload_succesvol = playmais.upload_maisxml(page, "/srv/share/maisxml/1843_1_102_flexis.txt")
+    if upload_succesvol:
+        # download wat we net geupload hebben
+        playmais.download_maisxml(page, toegang="1843")
+    else:
+        ...
 ```
 
-Alle beschikbare functies en documentatie kun je hier vinden:
+Alle beschikbare functies en functie documentatie kun je hier vinden:
 
 <!-- documentatie URL is nog te maken -->
 ...

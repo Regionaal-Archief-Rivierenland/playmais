@@ -81,7 +81,7 @@ def upload_maisxml(
         logfile = logfile or maisxml.parent / f"{maisxml.name.split(".")[0]}.log"
         Path(logfile).write_text(logtext)
 
-        # FIXME: these are probably not all error cases
+        # FIXME: these are probably not all possible error cases
         if (
             "fout" in logtext.lower()
             or "error" in logtext.lower()

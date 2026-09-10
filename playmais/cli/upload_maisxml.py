@@ -7,7 +7,7 @@ def main():
     # TODO: add n of workers (though this needs more smart matching with notifs etc)
     parser = argparse.ArgumentParser(description="Upload MAIS XML bestanden", color=True)
     parser.add_argument(
-        "files", help="MAIS XML bestand(en) om te uploaden", nargs="+", metavar="FILE.xml"
+        "files", help="MAIS XML bestand(en) om te uploaden", nargs="+", metavar="FILE.txt"
     )
     parser.add_argument(
         "-d",

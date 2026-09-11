@@ -70,7 +70,8 @@ def upload_maisxml(
             continue
 
         uploadvenster.get_by_role("button", name="Ok").click()
-        log.info(f"Upload van {maisxml.name} is geslaagd; wachten tot MAIS de XML heeft verwerkt...")
+        log.info(f"Upload van {maisxml.name} is geslaagd")
+        log.info("wachten tot MAIS de XML heeft verwerkt...")
         # TODO: this is a long wait, maybe inform the user?
         # TODO: maybe the timeout shouldn't be infinite?
         page.wait_for_function("document.querySelector('.js')?.textContent?.includes('Wacht op beoordeling')", timeout=0)

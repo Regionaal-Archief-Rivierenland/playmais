@@ -1,8 +1,10 @@
 import logging
+import re
 import zipfile
-from playwright.sync_api import Playwright, sync_playwright, expect
-from time import sleep
 from pathlib import Path
+from time import sleep
+
+from playwright.sync_api import Playwright, expect, sync_playwright
 
 log = logging.getLogger(__name__)
 

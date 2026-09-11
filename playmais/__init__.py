@@ -1,5 +1,6 @@
 from .login import login
 from .upload_maisxml import upload_maisxml
+from .download_maisxml import download_maisxml_van_toegangcodes, download_maisxml_van_toegansgroep
 
 import logging
 
@@ -7,7 +8,7 @@ import logging
 _log = logging.getLogger(__name__)
 _log.setLevel(logging.INFO)
 
-# setup logging
+# logger config
 logging.basicConfig(
     format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%d %b %H:%M:%S"
 )

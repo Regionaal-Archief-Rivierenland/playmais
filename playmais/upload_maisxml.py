@@ -85,8 +85,9 @@ def upload_maisxml(
         Path(logfile).write_text(logtext)
 
         # FIXME: these are probably not all possible error cases
+
         if (
-            "fout" in logtext.lower()
+            " fout " in logtext.lower()  # "fouten" is always present, but the word " fout " an sich not
             or "error" in logtext.lower()
             or "Einde van importeren" not in logtext
             or len(logtext.split("\n")) > 22 # more than 22 lines is probably also problematic

@@ -103,6 +103,11 @@ def upload_maisxml(
             continue
         else:
             page.get_by_role("button", name="OK").click()
+            try:
+                # good habit to close things
+                page.get_by_role("button", name=" Sluiten").click()
+            except:
+                pass
             log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
             return True
 

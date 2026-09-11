@@ -1,6 +1,6 @@
-from .login import login
-from .upload_maisxml import upload_maisxml
-from .download_maisxml import download_maisxml_van_toegangcodes, download_maisxml_van_toegansgroep
+from ._login import login
+from ._upload_maisxml import upload_maisxml
+from ._download_maisxml import download_maisxml_van_toegangcodes, download_maisxml_van_toegansgroep
 
 import logging
 

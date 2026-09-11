@@ -1,9 +1,12 @@
 import getpass
 import os
 import sys
+import logging
 
 from time import sleep
 from playwright.sync_api import Playwright, sync_playwright, expect
+
+log = logging.getLogger(__name__)
 
 def _resolve_username():
     return os.environ.get(f"MAIS_USER") or input("MAIS gebruikersnaam: ")
@@ -16,11 +19,12 @@ def _resolve_password(user):
     return getpass.getpass(f"Password ({user}): ", echo_char="*")
 
 def _resolve_2fa():
-    # TODO: i guess people may want to enter this in the browser?
+    # TODO: i guess people may want to enter 2fa codes in the browser?
     if not sys.stdin.isatty():
         raise RuntimeError(f"encountered 2fa prompt, but not running in an interactive shell")
     return input("2FA code: ")
 
+# if we get booted, we have to redo the password. I guess one more advantage for an object-oriented model??
 def login(page: Page, gebruikersnaam=None, wachtwoord=None):
     """Log in op MAIS. Als inloggen goed gaat kom je op de hoofdpagina.
 
@@ -65,4 +69,4 @@ def login(page: Page, gebruikersnaam=None, wachtwoord=None):
         if foutmelding.is_visible():
             raise RuntimeError(f"Ongeldige 2fa code voor {gebruikersnaam}")
 
-    print(f"Succesvol ingelogd als {gebruikersnaam}!")
+    log.info(f"Succesvol ingelogd als {gebruikersnaam}!")

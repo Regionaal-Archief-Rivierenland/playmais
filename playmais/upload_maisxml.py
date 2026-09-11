@@ -1,7 +1,10 @@
 import re
+import logging
 from playwright.sync_api import Playwright, sync_playwright, expect
 from time import sleep
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 # TODO: maybe accept file streams?
 # TODO: do we really need pogingen/retry mechanism?
@@ -45,7 +48,7 @@ def upload_maisxml(
 
     # upload MAIS XML to the server
     while pogingen:
-        print(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+        log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
         page.get_by_role("button", name="Importeren").click()
         uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
 
@@ -60,14 +63,14 @@ def upload_maisxml(
 
         # check of filename in het uploadvenster voorkomt
         if not uploadvenster.get_by_text(maisxml.name).is_visible():
-            print(f"Upload van {maisxml.name} is niet geslaagd")
+            log.warn(f"Upload van {maisxml.name} is niet geslaagd")
             sleep(5)
             uploadvenster.get_by_role("button", name="Annuleren").click()
             pogingen -= 1
             continue
 
         uploadvenster.get_by_role("button", name="Ok").click()
-        print(f"Upload van {maisxml.name} is geslaagd; wachten tot MAIS de XML heeft verwerkt...")
+        log.info(f"Upload van {maisxml.name} is geslaagd; wachten tot MAIS de XML heeft verwerkt...")
         # TODO: this is a long wait, maybe inform the user?
         # TODO: maybe the timeout shouldn't be infinite?
         page.wait_for_function("document.querySelector('.js')?.textContent?.includes('Wacht op beoordeling')", timeout=0)
@@ -88,7 +91,7 @@ def upload_maisxml(
             or "Einde van importeren" not in logtext
             or len(logtext.split("\n")) > 22 # more than 22 lines is probably also problematic
         ):
-            print(f"MIAS heeft een foutgevonden in de MAIS XML; zie {logfile} voor meer informatie")
+            log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
             pogingen -= 1
             # The only way to cancel is to wait, for some reason, so wait 8min
             sleep(8 * 60)
@@ -99,7 +102,7 @@ def upload_maisxml(
             continue
         else:
             page.get_by_role("button", name="OK").click()
-            print(f"{maisxml} lijkt foutloos verwerkt ✅")
+            log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
             return True
 
     # upload was niet succesvol

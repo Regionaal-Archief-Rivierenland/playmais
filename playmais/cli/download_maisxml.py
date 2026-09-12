@@ -73,7 +73,7 @@ def main():
             return
 
         for groepnaam in args.groepnaam:
-            playmais.download_maisxml_van_toegangcodes(page, groepnaam, args.output_directory)
+            playmais.download_maisxml_van_toegansgroep(page, groepnaam, args.output_directory)
         
         if args.toegangcodes:
             playmais.download_maisxml_van_toegangcodes(page, args.toegangcodes, args.output_directory)

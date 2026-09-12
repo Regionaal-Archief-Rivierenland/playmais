@@ -82,7 +82,8 @@ def download_maisxml_van_toegansgroep(page: Page, groepnaam: str, folder: str | 
         # click op de dropdown
         page.get_by_label("Toegangsgroep").select_option(label=groepnaam)
     except:
-        raise ValueError(f"De toegangsgroep '{groepnaam}' lijkt niet te bestaan")
+        raise ValueError(f"De toegangsgroep '{groepnaam}' lijkt niet te bestaan; "
+        "zie `playmais.list_toegangsgroepen()` voor alle toegangsgroepen")
 
     sleep(5)
     log.info(f"Toegangsgroep '{groepnaam}' aan het downloaden...")

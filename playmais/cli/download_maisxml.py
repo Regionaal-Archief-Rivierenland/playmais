@@ -1,5 +1,6 @@
 import argparse
 import logging
+from pathlib import Path
 import playmais
 from time import sleep
 from playwright.sync_api import sync_playwright
@@ -37,7 +38,7 @@ def main():
         "-o",
         "--output-directory",
         help="Locatie voor gedownloade MAIS XML bestanden. Default is huidige directory",
-        default="/srv/share/maisxml"
+        default=Path.cwd()
     )
     parser.add_argument(
         "-d",

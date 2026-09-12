@@ -9,3 +9,4 @@ dependencies = []
 
 [project.scripts]
 upload_maisxml = "playmais.cli.upload_maisxml:main"
+download_maisxml = "playmais.cli.download_maisxml:main"

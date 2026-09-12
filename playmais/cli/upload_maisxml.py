@@ -2,7 +2,7 @@ import argparse
 import playmais
 from playwright.sync_api import sync_playwright
 
-
+# TODO: return success status?
 def main():
     # TODO: add n of workers (though this needs more smart matching with notifs etc)
     parser = argparse.ArgumentParser(description="Upload MAIS XML bestanden", color=True)
@@ -22,6 +22,8 @@ def main():
         context = browser.new_context()
         page = context.new_page()
         playmais.login(page)
-        
+
         for f in args.files:
             playmais.upload_maisxml(page, f)
+            page.reload()
+            sleep(2)

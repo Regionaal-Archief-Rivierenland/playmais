@@ -1,5 +1,6 @@
 import argparse
 import playmais
+from time import sleep
 from playwright.sync_api import sync_playwright
 
 # TODO: return success status?

@@ -35,6 +35,8 @@ def _download_all(page, folder):
         if download_dst.suffix == ".zip":
             with zipfile.ZipFile(download_dst, 'r') as zip_ref:
                 zip_ref.extractall(folder)
+            # delete original zip
+            download_dst.unlink()
 
     try:
         # good habit to close things
@@ -47,10 +49,11 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     """Download MAIS XML van de gegeven toegangscodes."""
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()
     page.get_by_role("link", name=" Toegangen Beheren van").click()
+    sleep(1)
     page.get_by_role("button", name="Acties ").click()
-    sleep(4)
+    sleep(3)
     page.locator("span").filter(has_text="Filter").click()
-    sleep(4)
+    sleep(3)
     page.get_by_label("Operator").select_option("REGEXP")
     sleep(3)
     page.get_by_role("textbox", name="Waarde").click()

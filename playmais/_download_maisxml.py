@@ -66,13 +66,18 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     if page.locator("#toegangen_ig_ig_grid_vc").get_by_text("Er zijn geen gegevens").is_visible():
         raise ValueError(f"Toegang(en) {','.join(toegangcodes)} lijken niet te bestaan")
         
-    log.info(f"Toegang(en) {",".join(toegangcodes)} aan het downloaden...")
+    log.info(f"Toegang(en) {", ".join(toegangcodes)} aan het downloaden...")
     _download_all(page, folder)
+    log.info(f"Toegang(en) {", ".join(toegangcodes)} zijn gedownload ✅")
+    # cleanup filter we just applied
+    page.get_by_role("button", name="Remove Filter").click()
+    sleep(3)
 
-def download_maisxml_van_toegansgroep(page: Page, groepnaam: list[str], folder: str | Path):
+def download_maisxml_van_toegansgroep(page: Page, groepnaam: str, folder: str | Path):
     """Download alle MAIS XML uit een bepaalde toegangsgroep."""
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()
     page.get_by_role("link", name=" Toegangen Beheren van").click()
+    sleep(3)
     try:
         # click op de dropdown
         page.get_by_label("Toegangsgroep").select_option(label=groepnaam)
@@ -82,3 +87,7 @@ def download_maisxml_van_toegansgroep(page: Page, groepnaam: list[str], folder: 
     sleep(5)
     log.info(f"Toegangsgroep '{groepnaam}' aan het downloaden...")
     _download_all(page, folder)
+    log.info(f"Toegangsgroep '{groepnaam}' is gedownload ✅")
+    # Reset toegansgroep filter
+    page.get_by_label("Toegangsgroep").select_option("")
+    sleep(3)

@@ -87,7 +87,7 @@ def upload_maisxml(
             or " fout " in logtext.lower()  # "fouten" is always present, but the word " fout " an sich not
             or "error" in logtext.lower()
             or "Einde van importeren" not in logtext
-            or len(logtext.split("\n")) > 22 # more than 22 lines is probably also problematic
+            or len(logtext.split("\n")) > 42 # more than 40 lines is probably also problematic
         ):
             log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
             # The only way to cancel is to wait, for some reason, so wait 8min

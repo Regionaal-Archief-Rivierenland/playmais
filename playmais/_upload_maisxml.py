@@ -32,7 +32,6 @@ def upload_maisxml(
 
     Returns:
         bool: Boolean die aangeeft of upload succesvol was of niet.
-
     """
     maisxml = Path(maisxml)
     if not maisxml.exists():
@@ -44,7 +43,6 @@ def upload_maisxml(
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()
 
-    # upload MAIS XML to the server
     while pogingen:
         log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
         page.get_by_role("button", name="Importeren").click()
@@ -92,17 +90,16 @@ def upload_maisxml(
             or len(logtext.split("\n")) > 22 # more than 22 lines is probably also problematic
         ):
             log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
-            pogingen -= 1
             # The only way to cancel is to wait, for some reason, so wait 8min
             sleep(8 * 60)
             page.reload()
             sleep(3)
             page.get_by_role("button", name=" Sluiten").click()
-            page.reload()
+            pogingen -= 1
             continue
         else:
             page.get_by_role("button", name="OK").click()
-            try:
+            try:  # keep the try since there may be mutiple close buttons
                 # good habit to close things
                 page.get_by_role("button", name=" Sluiten").click()
             except:

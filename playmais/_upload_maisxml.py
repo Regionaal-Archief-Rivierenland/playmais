@@ -39,9 +39,7 @@ def upload_maisxml(
         raise FileNotFoundError(f"Het MAIS XML bestand {maisxml} is niet gevonden")
 
     # we don't do anything with the toegang code, but its nice to know where the file is going to go to
-    target_toegang = re.match(r"^(\d+)_.*", maisxml.name)
-    if not target_toegang:
-        raise ValueError(f"{maisxml} begint niet met een toegangscode")
+    target_toegang = re.match(r"^(\d+)_.*", maisxml.name) or maisxml.name.removesuffix(maisxml.suffix)
 
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()

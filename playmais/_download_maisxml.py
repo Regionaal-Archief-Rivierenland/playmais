@@ -14,11 +14,11 @@ def _download_all(page, folder):
     if folder.exists() and not folder.is_dir():
         raise ValueError(f"{folder} exists but is not a directory")
 
-    page.get_by_label("Header.").get_by_title("Select All").click()
+    page.get_by_role("columnheader", name="Row header ").click()
+    sleep(1)
     page.get_by_role("button", name="Bewerkingen ").click()
-    sleep(3)
     page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click()
-    sleep(3)
+    sleep(4)
     page.get_by_role("button", name="OK").click()
 
     links = page.get_by_role("link", name=re.compile(r"^\[.*Download exportbestand "))

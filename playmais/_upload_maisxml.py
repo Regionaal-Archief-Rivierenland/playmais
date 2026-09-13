@@ -83,11 +83,11 @@ def upload_maisxml(
 
         # FIXME: these are probably not all possible error cases
         if (
-            re.match(r".*aantal fouten: [1-9]\d*", logtext.lower())
-            or " fout " in logtext.lower()  # "fouten" is always present, but the word " fout " an sich not
+            re.match(r".*aantal fouten: [1-9]\d*", logtext.lower()) # one or more after fouten
+            or re.search(r"\bfout\b", logtext.lower()) # e.g. "Fout:" or " fout:", but not "fouten"
             or "error" in logtext.lower()
-            or "Einde van importeren" not in logtext
-            or len(logtext.split("\n")) > 42 # more than 40 lines is probably also problematic
+            or "onbekende tag" in logtext.lower()
+            or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
         ):
             log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
             # The only way to cancel is to wait, for some reason, so wait 8min

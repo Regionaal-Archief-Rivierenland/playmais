@@ -13,7 +13,7 @@ _log.setLevel(logging.INFO)
 # logger config
 if os.environ.get("MAIS_LOGGING_MODE") == "systemd":
     # systemd already prints timestamps
-    logging.basicConfig(format="[%(levelname)s: %(message)s")
+    logging.basicConfig(format="%(levelname)s: %(message)s")
 else:
     logging.basicConfig(
         format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%d %b %H:%M:%S"

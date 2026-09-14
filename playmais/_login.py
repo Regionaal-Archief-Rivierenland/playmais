@@ -63,7 +63,7 @@ def login(page: Page, gebruikersnaam=None, wachtwoord=None):
         raise RuntimeError("Ongeldige gebruikersnaam of wachtwoord")
 
     if _2fa.is_visible():
-        _2fa.fill(_resolve_2fa(user))
+        _2fa.fill(_resolve_2fa(gebruikersnaam))
         page.get_by_role("button", name="Inloggen").click()
         expect(foutmelding.or_(homepage)).to_be_visible()
         if foutmelding.is_visible():

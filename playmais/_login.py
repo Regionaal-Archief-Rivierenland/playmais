@@ -18,11 +18,11 @@ def _resolve_password(user):
         raise RuntimeError(f"not running in an interactive shell; set MAIS_PASSWORD")
     return getpass.getpass(f"Password ({user}): ", echo_char="*")
 
-def _resolve_2fa():
+def _resolve_2fa(user):
     # TODO: i guess people may want to enter 2fa codes in the browser?
     if not sys.stdin.isatty():
         raise RuntimeError(f"encountered 2fa prompt, but not running in an interactive shell")
-    return input("2FA code: ")
+    return input(f"2FA code {user}: ")
 
 # if we get booted, we have to redo the password. I guess one more advantage for an object-oriented model??
 def login(page: Page, gebruikersnaam=None, wachtwoord=None):
@@ -63,7 +63,7 @@ def login(page: Page, gebruikersnaam=None, wachtwoord=None):
         raise RuntimeError("Ongeldige gebruikersnaam of wachtwoord")
 
     if _2fa.is_visible():
-        _2fa.fill(_resolve_2fa())
+        _2fa.fill(_resolve_2fa(user))
         page.get_by_role("button", name="Inloggen").click()
         expect(foutmelding.or_(homepage)).to_be_visible()
         if foutmelding.is_visible():

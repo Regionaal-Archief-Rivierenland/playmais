@@ -54,9 +54,9 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     page.get_by_role("button", name="Acties ").click()
     sleep(3)
     page.locator("span").filter(has_text="Filter").click()
-    sleep(3)
+    sleep(4)
     page.get_by_label("Operator").select_option("REGEXP")
-    sleep(3)
+    sleep(5)
     page.get_by_role("textbox", name="Waarde").click()
 
     toegangcodes_regex = "|".join(toegangcodes)

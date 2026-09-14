@@ -22,7 +22,7 @@ def _resolve_2fa(user):
     # TODO: i guess people may want to enter 2fa codes in the browser?
     if not sys.stdin.isatty():
         raise RuntimeError(f"encountered 2fa prompt, but not running in an interactive shell")
-    return input(f"2FA code {user}: ")
+    return input(f"2FA code ({user}): ")
 
 # if we get booted, we have to redo the password. I guess one more advantage for an object-oriented model??
 def login(page: Page, gebruikersnaam=None, wachtwoord=None):

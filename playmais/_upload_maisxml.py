@@ -7,12 +7,10 @@ from pathlib import Path
 log = logging.getLogger(__name__)
 
 # TODO: maybe accept file streams?
-# TODO: do we really need pogingen/retry mechanism?
 def upload_maisxml(
     page: Page,
     maisxml: str | Path,
     logfile: str | Path = None,
-    pogingen: int = 1,
     overschrijf_bestaande_inrichting: bool = False,
 ) -> bool:
     """Upload een MAIS XML bestand naar een toegang. De juiste toegang wordt uit
@@ -25,7 +23,6 @@ def upload_maisxml(
         maisxml (str | Path): pad naar MAIS XML bestand (bijv. "1854_1_102_flexis.txt")
         logfile (Optional[str | Path]): Logfile om het eindresultaat naar te schrijven.
           Default is een .log bestand naast `maisxml`.
-        pogingen (Optional[int]): Aantal upload pogingen
         overschrijf_bestaande_inrichting (Optional[bool]): Geeft aan of de
           inrichting van de toegang (ingerichte archiefeenheidsoorten en toegestane
           hiërarchie) overschreven dient te worden. Default is om dit uit te zetten.
@@ -43,69 +40,66 @@ def upload_maisxml(
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()
 
-    while pogingen:
-        log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
-        page.get_by_role("button", name="Importeren").click()
-        uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
+    log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+    page.get_by_role("button", name="Importeren").click()
+    uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
 
-        # TODO: do this for the other boxes as well?
-        checkbox = uploadvenster.locator("#P218_OVERSCHRIJF_INRICHTING_CONTAINER > .t-Form-inputContainer")
-        checkbox_state = checkbox.locator("input[type='hidden']").get_attribute("value") == "1"
-        if overschrijf_bestaande_inrichting != checkbox_state:
-            checkbox.locator("label").click()
+    # TODO: have a toggle for the other boxes as well?
+    checkbox = uploadvenster.locator("#P218_OVERSCHRIJF_INRICHTING_CONTAINER > .t-Form-inputContainer")
+    checkbox_state = checkbox.locator("input[type='hidden']").get_attribute("value") == "1"
+    if overschrijf_bestaande_inrichting != checkbox_state:
+        checkbox.locator("label").click()
 
-        sleep(4)
-        uploadvenster.locator("input[type='file']").set_input_files(maisxml)
+    sleep(4)
+    uploadvenster.locator("input[type='file']").set_input_files(maisxml)
 
-        # check of filename in het uploadvenster voorkomt
-        if not uploadvenster.get_by_text(maisxml.name).is_visible():
-            log.warn(f"Upload van {maisxml.name} is niet geslaagd")
-            sleep(5)
-            uploadvenster.get_by_role("button", name="Annuleren").click()
-            pogingen -= 1
-            continue
+    # check of filename in het uploadvenster voorkomt
+    if not uploadvenster.get_by_text(maisxml.name).is_visible():
+        log.warn(f"Upload van {maisxml.name} is niet geslaagd")
+        sleep(5)
+        uploadvenster.get_by_role("button", name="Annuleren").click()
+        return False
 
-        uploadvenster.get_by_role("button", name="Ok").click()
-        log.info(f"Upload van {maisxml.name} is geslaagd")
-        log.info("Wachten tot MAIS de XML heeft verwerkt...")
-        # TODO: this is a long wait, maybe inform the user?
-        # TODO: maybe the timeout shouldn't be infinite?
-        page.wait_for_function("document.querySelector('.js')?.textContent?.includes('Wacht op beoordeling')", timeout=0)
+    uploadvenster.get_by_role("button", name="Ok").click()
+    log.info(f"Upload van {maisxml.name} is geslaagd")
+    log.info("Wachten tot MAIS de XML heeft verwerkt...")
+    # TODO: this is a long wait, maybe inform the user?
+    # TODO: maybe the timeout shouldn't be infinite?
+    page.wait_for_function("document.querySelector('.js')?.textContent?.includes('Wacht op beoordeling')", timeout=0)
 
-        logtext = (
-            page.locator('iframe[title="Logging"]')
-            .content_frame.locator("div.t-Region-body")
-            .filter(has_text="Import gestart")
-            .inner_text()
-        )
-        logfile = logfile or maisxml.parent / f"{maisxml.name.split(".")[0]}.log"
-        Path(logfile).write_text(logtext)
+    logtext = (
+        page.locator('iframe[title="Logging"]')
+        .content_frame.locator("div.t-Region-body")
+        .filter(has_text="Import gestart")
+        .inner_text()
+    )
+    logfile = logfile or maisxml.parent / f"{maisxml.name.split(".")[0]}.log"
+    Path(logfile).write_text(logtext)
 
-        # FIXME: these are probably not all possible error cases
-        if (
-            re.match(r".*aantal fouten: [1-9]\d*", logtext.lower()) # one or more after fouten
-            or re.search(r"\bfout\b", logtext.lower()) # e.g. "Fout:" or " fout:", but not "fouten"
-            or "error" in logtext.lower()
-            or "onbekende tag" in logtext.lower()
-            or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
-        ):
-            log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
-            # The only way to cancel is to wait, for some reason, so wait 8min
-            sleep(8 * 60)
-            page.reload()
-            sleep(3)
-            page.get_by_role("button", name=" Sluiten").click()
-            pogingen -= 1
-            continue
-        else:
-            page.get_by_role("button", name="OK").click()
-            try:  # keep the try since there may be mutiple close buttons
-                # good habit to close things
-                page.get_by_role("button", name=" Sluiten").click()
-            except:
-                pass
-            log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
-            return True
+    # FIXME: these are probably not all possible error cases
+    if (
+        re.match(r".*aantal fouten: [1-9]\d*", logtext.lower()) # one or more after fouten
+        or re.search(r"\bfout\b", logtext.lower()) # e.g. "Fout:" or " fout:", but not "fouten"
+        or "error" in logtext.lower()
+        or "onbekende tag" in logtext.lower()
+        or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
+    ):
+        log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
+        # The only way to cancel is to wait, for some reason, so wait 8min
+        sleep(8 * 60)
+        page.reload()
+        sleep(3)
+        page.get_by_role("button", name=" Sluiten").click()
+        # upload was niet succesvol
+        return False
 
-    # upload was niet succesvol
-    return False
+    page.get_by_role("button", name="OK").click()
+
+    try:  # keep the try since there may be mutiple close buttons
+        # good habit to close things
+        page.get_by_role("button", name=" Sluiten").click()
+    except:
+        pass
+
+    log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
+    return True

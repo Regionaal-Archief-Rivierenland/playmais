@@ -18,7 +18,7 @@ def _download_all(page, folder):
     sleep(1)
     page.get_by_role("button", name="Bewerkingen ").click()
     sleep(3)
-    page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click()
+    page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click(force=True)
     sleep(4)
     page.get_by_role("button", name="OK").click()
 

@@ -60,7 +60,7 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     page.get_by_role("textbox", name="Waarde").click()
 
     toegangcodes_regex = "|".join(toegangcodes)
-    page.get_by_role("textbox", name="Waarde").fill(f"({toegangcodes_regex})")
+    page.get_by_role("textbox", name="Waarde").fill(f"^({toegangcodes_regex})$")
     page.get_by_role("button", name="Opslaan").click()
     sleep(5)
 

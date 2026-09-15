@@ -42,7 +42,7 @@ def upload_maisxml(
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()
     sleep(2)
 
-    upload_already_in_progress = page.get_by_role("link", name=f"Bezig met importeren van {maisxml.name}")
+    upload_already_in_progress = page.get_by_role("link", name=f"Bezig met importeren van {maisxml.name}").count()
     if not upload_already_in_progress:
         # TODO: factor to own function (can be named "upload", since the main one will be called importeer)
         log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")

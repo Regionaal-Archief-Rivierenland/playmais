@@ -6,7 +6,7 @@ from pathlib import Path
 
 log = logging.getLogger(__name__)
 
-# TODO: maybe accept file streams?
+# TODO: i think we need a function that targets a notif by name
 def upload_maisxml(
     page: Page,
     maisxml: str | Path,
@@ -35,37 +35,46 @@ def upload_maisxml(
         raise FileNotFoundError(f"Het MAIS XML bestand {maisxml} is niet gevonden")
 
     # we don't do anything with the toegang code, but its nice to know where the file is going to go to
+    # FIXME: toegangcodes can be almost everything
     target_toegang = re.match(r"^(\d+)_.*", maisxml.name) or maisxml.name.removesuffix(maisxml.suffix)
 
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()
+    sleep(2)
 
-    log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
-    page.get_by_role("button", name="Importeren").click()
-    uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
+    upload_already_in_progress = page.get_by_role("link", name=f"Bezig met importeren van {maisxml.name}")
+    if not upload_already_in_progress:
+        # TODO: factor to own function (can be named "upload", since the main one will be called importeer)
+        log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+        page.get_by_role("button", name="Importeren").click()
+        uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
 
-    # TODO: have a toggle for the other boxes as well?
-    checkbox = uploadvenster.locator("#P218_OVERSCHRIJF_INRICHTING_CONTAINER > .t-Form-inputContainer")
-    checkbox_state = checkbox.locator("input[type='hidden']").get_attribute("value") == "1"
-    if overschrijf_bestaande_inrichting != checkbox_state:
-        checkbox.locator("label").click()
+        # TODO: have a toggle for the other boxes as well?
+        checkbox = uploadvenster.locator("#P218_OVERSCHRIJF_INRICHTING_CONTAINER > .t-Form-inputContainer")
+        checkbox_state = checkbox.locator("input[type='hidden']").get_attribute("value") == "1"
+        if overschrijf_bestaande_inrichting != checkbox_state:
+            checkbox.locator("label").click()
 
-    sleep(4)
-    uploadvenster.locator("input[type='file']").set_input_files(maisxml)
+        sleep(4)
+        uploadvenster.locator("input[type='file']").set_input_files(maisxml)
 
-    # check of filename in het uploadvenster voorkomt
-    if not uploadvenster.get_by_text(maisxml.name).is_visible():
-        log.warn(f"Upload van {maisxml.name} is niet geslaagd")
-        sleep(5)
-        uploadvenster.get_by_role("button", name="Annuleren").click()
-        return False
+        # check of filename in het uploadvenster voorkomt
+        if not uploadvenster.get_by_text(maisxml.name).is_visible():
+            log.warn(f"Upload van {maisxml.name} is niet geslaagd")
+            sleep(5)
+            uploadvenster.get_by_role("button", name="Annuleren").click()
+            return False
 
-    uploadvenster.get_by_role("button", name="Ok").click()
-    log.info(f"Upload van {maisxml.name} is geslaagd")
-    log.info("Wachten tot MAIS de XML heeft verwerkt...")
+        uploadvenster.get_by_role("button", name="Ok").click()
+        log.info(f"Upload van {maisxml.name} is geslaagd")
+        log.info("Wachten tot MAIS de XML heeft verwerkt...")
+    else:
+        log.info(f"Wachten op verwerking van {maisxml.name} hervat")
+
     # TODO: this is a long wait, maybe inform the user?
     # TODO: maybe the timeout shouldn't be infinite?
-    page.wait_for_function("document.querySelector('.js')?.textContent?.includes('Wacht op beoordeling')", timeout=0)
+    # TODO: check for XML filename?
+    page.locator(".js", has_text="Wacht op beoordeling").first.wait_for(timeout=0, state="attached")
 
     logtext = (
         page.locator('iframe[title="Logging"]')

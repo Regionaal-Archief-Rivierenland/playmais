@@ -35,8 +35,7 @@ def upload_maisxml(
         raise FileNotFoundError(f"Het MAIS XML bestand {maisxml} is niet gevonden")
 
     # we don't do anything with the toegang code, but its nice to know where the file is going to go to
-    # FIXME: toegangcodes can be almost everything
-    target_toegang = re.match(r"^(\d+)_.*", maisxml.name) or maisxml.name.removesuffix(maisxml.suffix)
+    target_toegang = re.match(r"^(.*?)_", maisxml.name)
 
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()

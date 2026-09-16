@@ -42,8 +42,9 @@ def upload_maisxml(
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()
     sleep(2)
 
-    upload_already_in_progress = page.get_by_role("link", name=f"Bezig met importeren van {maisxml.name}").count()
-    if not upload_already_in_progress:
+    # check if upload is already in progress
+    upload_toast = page.locator(".toast-message", has_text=f"Bezig met importeren van {maisxml.name}")
+    if not upload_toast.count():
         # TODO: factor to own function (can be named "upload", since the main one will be called importeer)
         log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
         page.get_by_role("button", name="Importeren").click()
@@ -61,21 +62,23 @@ def upload_maisxml(
         # check of filename in het uploadvenster voorkomt
         if not uploadvenster.get_by_text(maisxml.name).is_visible():
             log.warn(f"Upload van {maisxml.name} is niet geslaagd")
-            sleep(5)
             uploadvenster.get_by_role("button", name="Annuleren").click()
             return False
 
         uploadvenster.get_by_role("button", name="Ok").click()
+        upload_toast.wait_for(timeout=2*60*60*1000) # wait two hours max
         log.info(f"Upload van {maisxml.name} is geslaagd")
         log.info("Wachten tot MAIS de XML heeft verwerkt...")
     else:
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 
-    # TODO: this is a long wait, maybe inform the user?
-    # TODO: maybe the timeout shouldn't be infinite?
-    # TODO: check for XML filename?
-    page.locator(".js", has_text="Wacht op beoordeling").first.wait_for(timeout=0, state="attached")
-
+    # TODO: maybe this shouldn't be infinite?
+    while True:
+        page.reload()
+        sleep(60)
+        if "Wacht op beoordeling" in upload_toast.inner_text():
+            break
+    sleep(7)
     logtext = (
         page.locator('iframe[title="Logging"]')
         .content_frame.locator("div.t-Region-body")

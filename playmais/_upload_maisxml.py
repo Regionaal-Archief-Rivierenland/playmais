@@ -114,6 +114,7 @@ def upload_maisxml(
     try:  # keep the try since there may be mutiple close buttons
         # good habit to close things
         page.get_by_role("button", name=" Sluiten").click()
+        page.get_by_role("button", name="×").click() # close the toast
     except:
         pass
 

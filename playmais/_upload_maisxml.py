@@ -73,11 +73,9 @@ def upload_maisxml(
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 
     # TODO: maybe this shouldn't be infinite?
-    while True:
+    while not "Wacht op beoordeling" in upload_toast.inner_text():
         page.reload()
         sleep(60)
-        if "Wacht op beoordeling" in upload_toast.inner_text():
-            break
         voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text()).group()
         print(f"\033[K{voortang}", end="\r", flush=True)
 

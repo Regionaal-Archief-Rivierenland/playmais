@@ -65,6 +65,7 @@ def upload_maisxml(
             return False
 
         uploadvenster.get_by_role("button", name="Ok").click()
+        # TODO: either this or some kind of error will be visible (check for "(proxy) error" in frame)
         upload_toast.wait_for(timeout=0)
         log.info(f"Upload van {maisxml.name} is geslaagd")
         log.info("Wachten tot MAIS de XML heeft verwerkt...")
@@ -74,9 +75,12 @@ def upload_maisxml(
     # TODO: maybe this shouldn't be infinite?
     while not "Wacht op beoordeling" in upload_toast.inner_text():
         page.reload()
-        sleep(60)
-        voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text()).group()
-        print(f"\033[K{voortang}", end="\r", flush=True)
+        sleep(45)
+        try:
+            voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text()).group()
+            print(f"\033[K{voortang}", end="\r", flush=True)
+        except:
+            log.warn("Upload toast seems to have dissapeared; hopefully it comes back?")
 
     print("\033[K", end="\r", flush=True) # reset line
     sleep(7)

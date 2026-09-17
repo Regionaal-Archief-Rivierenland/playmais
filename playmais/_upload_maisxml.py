@@ -65,7 +65,7 @@ def upload_maisxml(
             return False
 
         uploadvenster.get_by_role("button", name="Ok").click()
-        upload_toast.wait_for(timeout=6*60*60*1000) # wait five hours max
+        upload_toast.wait_for(timeout=0)
         log.info(f"Upload van {maisxml.name} is geslaagd")
         log.info("Wachten tot MAIS de XML heeft verwerkt...")
     else:

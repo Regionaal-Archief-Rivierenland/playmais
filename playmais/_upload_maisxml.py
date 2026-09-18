@@ -74,12 +74,11 @@ def upload_maisxml(
 
     # TODO: maybe this shouldn't be infinite?
     while not "Wacht op beoordeling" in upload_toast.inner_text():
-        voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text()).group()
-        print(f"\033[K{voortang}", end="\r", flush=True)
         page.reload()
         sleep(45)
+        voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text())
+        print(f"\033[K{voortang.group() if voortang else ''}", end="\r", flush=True)
 
-    print("\033[K", end="\r", flush=True) # reset line
     sleep(7)
     logtext = (
         page.locator('iframe[title="Logging"]')

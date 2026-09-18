@@ -74,13 +74,10 @@ def upload_maisxml(
 
     # TODO: maybe this shouldn't be infinite?
     while not "Wacht op beoordeling" in upload_toast.inner_text():
+        voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text()).group()
+        print(f"\033[K{voortang}", end="\r", flush=True)
         page.reload()
         sleep(45)
-        try:
-            voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text()).group()
-            print(f"\033[K{voortang}", end="\r", flush=True)
-        except:
-            log.warn("Upload toast seems to have dissapeared; hopefully it comes back?")
 
     print("\033[K", end="\r", flush=True) # reset line
     sleep(7)

@@ -23,3 +23,9 @@ logging.addLevelName(
     logging.WARNING,
     "\033[1;33m%s\033[1;0m" % logging.getLevelName(logging.WARNING),
 )
+
+logging.addLevelName(
+    # colorize warning messages
+    logging.ERROR,
+    "\033[1;31m%s\033[1;0m" % logging.getLevelName(logging.ERROR),
+)

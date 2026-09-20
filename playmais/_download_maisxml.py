@@ -19,10 +19,9 @@ def _download_all(page, folder):
     page.get_by_role("button", name="Bewerkingen ").click(force=True)
     sleep(3)
     page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click(force=True)
-    sleep(7)
+    sleep(4)
     page.get_by_role("button", name="OK").click(force=True)
 
-    # FIXME: properly track toast
     links = page.get_by_role("link", name=re.compile(r"^\[.*Download exportbestand "))
     expect(links.first).to_be_visible(timeout=0)
 

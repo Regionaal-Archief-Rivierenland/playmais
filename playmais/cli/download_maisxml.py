@@ -58,7 +58,8 @@ def main():
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=not args.no_headless)
-        context = browser.new_context()
+        # TODO: set this everywhere. Nicer debugging experience and makes MAIS less stupid
+        context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
 
         if args.list_toegangsgroepen:

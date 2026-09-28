@@ -21,10 +21,17 @@ def _download_all(page, folder):
     page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click(force=True)
     sleep(4)
     page.get_by_role("button", name="OK").click(force=True)
+    sleep(5)
 
+    export_toast = page.locator(".toast-message", has_text="Exporteren van")
+    while export_toast.count():
+        voortang = re.search(r"Exporteren van.*", export_toast.inner_text())
+        print(f"\033[K{voortang.group() if voortang else ''}", end="\r", flush=True)
+        page.reload()
+        sleep(20)
+
+    # click available download links
     links = page.get_by_role("link", name=re.compile(r"^\[.*Download exportbestand "))
-    expect(links.first).to_be_visible(timeout=0)
-
     for link in links.all():
         with page.expect_download() as download_info:
             link.click()

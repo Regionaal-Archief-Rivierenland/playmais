@@ -8,6 +8,10 @@ from playwright.sync_api import Playwright, expect, sync_playwright
 
 log = logging.getLogger(__name__)
 
+# FIXME: in obscure cases, a user (including RAR_ARA) may lack the required
+# persmission to _see_ a toegang (at least on the Beheren page). These cases can
+# be caught if you check the downloaded results
+# FIXME: this may download the wrong thing if multiple downloads toast are present
 def _download_all(page, folder):
     """Download alle toegang door ze allemaal tegelijk te selecteren"""
     folder = Path(folder)
@@ -47,6 +51,7 @@ def _download_all(page, folder):
         download_dst = folder / download.suggested_filename
         download.save_as(download_dst)
 
+        # a download may come in the form of a zip or a .txt file
         if download_dst.suffix == ".zip":
             with zipfile.ZipFile(download_dst, 'r') as zip_ref:
                 zip_ref.extractall(folder)
@@ -59,7 +64,7 @@ def _download_all(page, folder):
     except:
         pass
 
-# TODO: account for max rows etc.
+# FIXME: account for pagination
 def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folder: str | Path):
     """Download MAIS XML van de gegeven toegangscodes."""
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()

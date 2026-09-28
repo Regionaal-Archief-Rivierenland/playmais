@@ -14,6 +14,13 @@ def _download_all(page, folder):
     if folder.exists() and not folder.is_dir():
         raise ValueError(f"{folder} exists but is not a directory")
 
+    # close all toast with status "finished", as they can obfuscate the export button
+    for toast in page.locator(".toast", has_text=re.compile("Gereed")).all():
+        # TODO: provide more info (bot not full inner_text, since that is tmi)
+        # TODO: i18n
+        log.info(f"Closing toast...")
+        toast.get_by_role("button", name="×").click()
+
     page.get_by_role("columnheader", name="Row header ").click(force=True)
     sleep(1)
     page.get_by_role("button", name="Bewerkingen ").click(force=True)

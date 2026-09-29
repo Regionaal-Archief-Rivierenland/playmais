@@ -6,12 +6,20 @@ from pathlib import Path
 
 log = logging.getLogger(__name__)
 
+
+def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state: bool):
+    checkbox = uploadvenster.locator(f"{checkbox_locator} > .t-Form-inputContainer")
+    checkbox_state = checkbox.locator("input[type='hidden']").get_attribute("value") == "1"
+    if state != checkbox_state:
+        checkbox.locator("label").click()
+
 # TODO: i think we need a function that targets a notif by name
 def upload_maisxml(
     page: Page,
     maisxml: str | Path,
     logfile: str | Path = None,
     overschrijf_bestaande_inrichting: bool = False,
+    nieuwe_guids: bool = False,
 ) -> bool:
     """Upload een MAIS XML bestand naar een toegang. De juiste toegang wordt uit
     de MAIS XML afgeleid.
@@ -26,14 +34,12 @@ def upload_maisxml(
         overschrijf_bestaande_inrichting (Optional[bool]): Geeft aan of de
           inrichting van de toegang (ingerichte archiefeenheidsoorten en toegestane
           hiërarchie) overschreven dient te worden. Default is om dit uit te zetten.
+        nieuwe_guids: maak nieuwe guids voor alle AETs en de top
 
     Returns:
         bool: Boolean die aangeeft of upload succesvol was of niet.
     """
     maisxml = Path(maisxml)
-    if not maisxml.exists():
-        raise FileNotFoundError(f"Het MAIS XML bestand {maisxml} is niet gevonden")
-
     # we don't do anything with the toegang code, but its nice to know where the file is going to go to
     target_toegang = re.match(r"^(.*?)_", maisxml.name)
 
@@ -44,22 +50,15 @@ def upload_maisxml(
     # check if upload is already in progress
     upload_toast = page.locator(".toast-message", has_text=f"Bezig met importeren van {maisxml.name}")
     if not upload_toast.count():
-        # TODO: factor to own function (can be named "upload", since the main one will be called importeer)
         log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
         page.get_by_role("button", name="Importeren").click()
         uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
-
-        # TODO: have a toggle for the other boxes as well?
-        checkbox = uploadvenster.locator("#P218_OVERSCHRIJF_INRICHTING_CONTAINER > .t-Form-inputContainer")
-        checkbox_state = checkbox.locator("input[type='hidden']").get_attribute("value") == "1"
-        if overschrijf_bestaande_inrichting != checkbox_state:
-            checkbox.locator("label").click()
-
         sleep(4)
-        uploadvenster.locator("input[type='file']").set_input_files(maisxml)
+        _set_checkbox_state(uploadvenster, "#P218_OVERSCHRIJF_INRICHTING_CONTAINER", overschrijf_bestaande_inrichting)
+        _set_checkbox_state(uploadvenster, "#P218_NIEUWE_GUIDS_LABEL", nieuwe_guids)
 
-        # check of filename in het uploadvenster voorkomt
-        if not uploadvenster.get_by_text(maisxml.name).is_visible():
+        uploadvenster.locator("input[type='file']").set_input_files(maisxml)
+        if not uploadvenster.get_by_text(maisxml.name).is_visible(): # filename in uploadvenster?
             log.warn(f"Upload van {maisxml.name} is niet geslaagd")
             uploadvenster.get_by_role("button", name="Annuleren").click()
             return False

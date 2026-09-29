@@ -69,6 +69,10 @@ def upload_maisxml(
         upload_toast.wait_for(timeout=0)
         log.info(f"Upload van {maisxml.name} is geslaagd")
         log.info("Wachten tot MAIS de XML heeft verwerkt...")
+    elif "fout" in upload_toast.inner_text().lower():
+        # TODO: add log? tho this branch is rare and logging adds a tiny bit of complexity
+        log.warn(f"MIAS heeft een fout gevonden in {maisxml}")
+        return False
     else:
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 

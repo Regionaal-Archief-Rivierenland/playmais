@@ -89,6 +89,7 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     log.info(f"Toegang(en) {", ".join(toegangcodes)} aan het downloaden...")
     _download_all(page, folder)
     log.info(f"Toegang(en) {", ".join(toegangcodes)} zijn gedownload ✅")
+    sleep(2)
     # cleanup filter we just applied
     page.get_by_role("button", name="Remove Filter").click()
     sleep(3)

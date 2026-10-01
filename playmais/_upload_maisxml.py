@@ -19,7 +19,7 @@ def upload_maisxml(
     maisxml: str | Path,
     logfile: str | Path = None,
     overschrijf_bestaande_inrichting: bool = False,
-    nieuwe_guids: bool = False,
+    nieuwe_guids: bool = True,
 ) -> bool:
     """Upload een MAIS XML bestand naar een toegang. De juiste toegang wordt uit
     de MAIS XML afgeleid.
@@ -34,7 +34,8 @@ def upload_maisxml(
         overschrijf_bestaande_inrichting (Optional[bool]): Geeft aan of de
           inrichting van de toegang (ingerichte archiefeenheidsoorten en toegestane
           hiërarchie) overschreven dient te worden. Default is om dit uit te zetten.
-        nieuwe_guids: maak nieuwe guids voor alle AETs en de top
+        nieuwe_guids: Maak nieuwe guids voor alle AETs en de top.
+         Default is true, omdat GUIDs weinig inherente waarde hebben.
 
     Returns:
         bool: Boolean die aangeeft of upload succesvol was of niet.

@@ -17,10 +17,10 @@ def main():
         action="store_true",
     )
     parser.add_argument(
-        "-g",
-        "--nieuwe-guids",
-        help="Maak nieuwe GUIDs aan voor geimporteerde AETs. Belangrijk bij het creëren van nieuwe AETs.",
-        action="store_true",
+        "-b",
+        "--behoud-guids",
+        help="Maak geen nieuwe GUIDs aan. (GUIDs hebben weinig inherent waarde, dus kun je meestal uitlaten)",
+        action="store_false",
     )
     args = parser.parse_args()
 

@@ -35,7 +35,7 @@ def _download_all(page, folder):
     sleep(5)
 
     export_toast = page.locator(".toast-message", has_text="Exporteren van")
-    while not "Gereed" in export_toast.inner_text():
+    while export_toast.count() and not "Gereed" in export_toast.inner_text():
         voortang = re.search(r"(Voortgang:.*)|(Bezig met.*)", export_toast.inner_text())
         print(f"\033[K{voortang.group() if voortang else ''}", end="\r", flush=True)
         page.reload()

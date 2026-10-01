@@ -22,6 +22,12 @@ def main():
         help="Maak geen nieuwe GUIDs aan (GUIDs hebben weinig inherent waarde, dus kan meestal uit)",
         action="store_false",
     )
+    parser.add_argument(
+        "-o",
+        "--overschrijf-inrichting",
+        help="Overschrijf bestaande inrichting.",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     with sync_playwright() as playwright:

@@ -31,6 +31,6 @@ def main():
         playmais.login(page)
 
         for f in args.files:
-            playmais.upload_maisxml(page, f, nieuwe_guids=args.nieuwe_guids)
+            playmais.upload_maisxml(page, f, nieuwe_guids=args.behoud_guids)
             page.reload()
             sleep(2)

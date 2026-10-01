@@ -16,6 +16,12 @@ def main():
         help="Run playwright in niet-headless mode",
         action="store_true",
     )
+    parser.add_argument(
+        "-g",
+        "--nieuwe-guids",
+        help="Maak nieuwe GUIDs aan voor geimporteerde AETs. Belangrijk bij het creëren van nieuwe AETs.",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     with sync_playwright() as playwright:
@@ -25,6 +31,6 @@ def main():
         playmais.login(page)
 
         for f in args.files:
-            playmais.upload_maisxml(page, f)
+            playmais.upload_maisxml(page, f, nieuwe_guids=args.nieuwe_guids)
             page.reload()
             sleep(2)

@@ -55,7 +55,7 @@ def upload_maisxml(
         uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
         sleep(4)
         _set_checkbox_state(uploadvenster, "#P218_OVERSCHRIJF_INRICHTING_CONTAINER", overschrijf_bestaande_inrichting)
-        _set_checkbox_state(uploadvenster, "#P218_NIEUWE_GUIDS_LABEL", nieuwe_guids)
+        _set_checkbox_state(uploadvenster, "#P218_NIEUWE_GUIDS_CONTAINER", nieuwe_guids)
 
         uploadvenster.locator("input[type='file']").set_input_files(maisxml)
         if not uploadvenster.get_by_text(maisxml.name).is_visible(): # filename in uploadvenster?

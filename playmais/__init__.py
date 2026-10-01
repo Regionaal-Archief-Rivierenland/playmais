@@ -11,7 +11,7 @@ _log = _logging.getLogger(__name__)
 _log.setLevel(_logging.INFO)
 
 # logger config
-if os.environ.get("MAIS__LOGGING_MODE") == "systemd":
+if os.environ.get("MAIS_LOGGING_MODE") == "systemd":
     # systemd already prints timestamps
     _logging.basicConfig(format="%(levelname)s: %(message)s")
 else:

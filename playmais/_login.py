@@ -12,7 +12,7 @@ def _resolve_username():
     return os.environ.get(f"MAIS_USER") or input("MAIS gebruikersnaam: ")
 
 def _resolve_password(user):
-    if pw := os.environ.get(f"MAIS_PASSWORD"):
+    if pw := os.environ.get(f"MAIS_PASSWORD") or os.environ.get(f"MAIS_PASS"):
         return pw
     if not sys.stdin.isatty():
         raise RuntimeError(f"not running in an interactive shell; set MAIS_PASSWORD")

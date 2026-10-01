@@ -19,7 +19,7 @@ def main():
     parser.add_argument(
         "-b",
         "--behoud-guids",
-        help="Maak geen nieuwe GUIDs aan. (GUIDs hebben weinig inherent waarde, dus kun je meestal uitlaten)",
+        help="Maak geen nieuwe GUIDs aan (GUIDs hebben weinig inherent waarde, dus kan meestal uit)",
         action="store_false",
     )
     args = parser.parse_args()

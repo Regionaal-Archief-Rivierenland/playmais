@@ -66,7 +66,14 @@ def _download_all(page, folder):
 
 # FIXME: account for pagination
 def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folder: str | Path):
-    """Download MAIS XML van de gegeven toegangscodes."""
+    """Download MAIS XML van de gegeven toegangscodes.
+
+
+    Args:
+        page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
+        toegangcodes (list[str]): lijst van toegangcodes om te downloaden
+        folder (str | Path): Folder om de MAIS XML in te downloaden
+    """
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()
     page.get_by_role("link", name=" Toegangen Beheren van").click()
     sleep(1)
@@ -95,7 +102,13 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     sleep(3)
 
 def download_maisxml_van_toegansgroep(page: Page, groepnaam: str, folder: str | Path):
-    """Download alle MAIS XML uit een bepaalde toegangsgroep."""
+    """Download alle MAIS XML uit een bepaalde toegangsgroep.
+
+    Args:
+        page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
+        toegangcodes (str): Naam van de toegangsgroep om te downloaden
+        folder (str | Path): Folder om de MAIS XML in te downloaden
+    """
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()
     page.get_by_role("link", name=" Toegangen Beheren van").click()
     sleep(3)

@@ -38,6 +38,17 @@ def login(page: Page, gebruikersnaam=None, wachtwoord=None):
         user: Je MAIS gebruikersnaam. Start meestal met `RAR_`.
         wachtwoord: Je MAIS wachtwoord.
 
+    Example:
+        ```python
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch()
+            context = browser.new_context()
+            page = context.new_page()
+
+            # login
+            playmais.login(page)
+        ```
+
     Raises:
         RuntimeError: Login is gefaald
     """

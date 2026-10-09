@@ -36,7 +36,12 @@ def main():
         page = context.new_page()
         playmais.login(page)
 
-        for f in args.files:
-            playmais.upload_maisxml(page, f, nieuwe_guids=args.behoud_guids)
+        for file in args.files:
+            playmais.upload_maisxml(
+                page,
+                file,
+                nieuwe_guids=args.behoud_guids,
+                overschrijf_bestaande_inrichting=args.overschrijf_inrichting,
+            )
             page.reload()
             sleep(2)

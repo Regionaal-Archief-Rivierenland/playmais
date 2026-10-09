@@ -4,7 +4,7 @@ import zipfile
 from pathlib import Path
 from time import sleep
 
-from playwright.sync_api import Playwright, expect, sync_playwright
+from playwright.sync_api import Playwright, expect, sync_playwright, Page
 
 log = logging.getLogger(__name__)
 

@@ -6,6 +6,14 @@ from ._list_toegangsgroepen import list_toegangsgroepen
 import logging as _logging
 import os
 
+__all__ = [
+    "download_maisxml_van_toegansgroep",
+    "download_maisxml_van_toegangcodes",
+    "upload_maisxml",
+    "login",
+    "list_toegangsgroepen",
+]
+
 # register global logger object
 _log = _logging.getLogger(__name__)
 _log.setLevel(_logging.INFO)

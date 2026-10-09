@@ -1,6 +1,6 @@
 import re
 import logging
-from playwright.sync_api import Playwright, sync_playwright, expect
+from playwright.sync_api import Playwright, sync_playwright, expect, Page
 from time import sleep
 from pathlib import Path
 

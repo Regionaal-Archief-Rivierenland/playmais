@@ -98,6 +98,7 @@ def upload_maisxml(
     Path(logfile).write_text(logtext)
 
     # FIXME: these are probably not all possible error cases
+    # TODO: ORA-xxx in the log is bad news, most of the time 
     if (
         re.match(r".*aantal fouten: [1-9]\d*", logtext.lower()) # one or more after fouten
         or re.search(r"\bfout\b", logtext.lower()) # e.g. "Fout:" or " fout:", but not "fouten"

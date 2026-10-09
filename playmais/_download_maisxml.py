@@ -58,11 +58,8 @@ def _download_all(page, folder):
             # delete original zip
             download_dst.unlink()
 
-    try:
-        # good habit to close things
-        page.get_by_role("button", name="×").click()
-    except:
-        pass
+    # good habit to close things
+    page.get_by_role("button", name="×").click()
 
 # FIXME: account for pagination
 def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folder: str | Path):

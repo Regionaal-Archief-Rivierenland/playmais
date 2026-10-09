@@ -27,8 +27,7 @@ with sync_playwright() as playwright:
 
 Alle beschikbare functies en functie documentatie kun je hier vinden:
 
-<!-- documentatie URL is nog te maken -->
-...
+https://regionaal-archief-rivierenland.github.io/playmais/
 
 ## CLI gebruik
 

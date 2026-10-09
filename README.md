@@ -20,7 +20,7 @@ with sync_playwright() as playwright:
     upload_succesvol = playmais.upload_maisxml(page, "/srv/share/maisxml/1843_1_102_flexis.txt")
     if upload_succesvol:
         # download wat we net geupload hebben
-        playmais.download_maisxml(page, toegang="1843")
+        playmais.download_maisxml_van_toegangcodes(page, toegangcodes=["1843"], folder="/tmp")
     else:
         ...
 ```
@@ -29,6 +29,10 @@ Alle beschikbare functies en functie documentatie kun je hier vinden:
 
 <!-- documentatie URL is nog te maken -->
 ...
+
+## CLI gebruik
+
+Als je deze library installeert, installeer je ook de commandline programma's `download_maisxml` en `upload_maisxml` mee. Ze werken ongeveer hetzelfde als de python functies (zie de `--help` tekst van de respectievelijke programma's), maar je kunt ze vanuit je terminal gebruiken.
 
 # Installatie
 

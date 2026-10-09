@@ -108,7 +108,7 @@ def upload_maisxml(
     ):
         log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
         # The only way to cancel is to wait, for some reason, so wait 8min
-        sleep(8 * 60)
+        sleep(60 * 8)
         page.reload()
         sleep(3)
         page.get_by_role("button", name=" Sluiten").click()

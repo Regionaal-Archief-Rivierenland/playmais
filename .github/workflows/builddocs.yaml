@@ -14,8 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv pip install --system . pdoc
-      - run: pdoc -d google -o docs playmais
+      - run: uv run --with pdoc python -m pdoc -d google -o docs playmais
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

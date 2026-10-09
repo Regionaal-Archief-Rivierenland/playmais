@@ -65,8 +65,12 @@ def upload_maisxml(
             return False
 
         uploadvenster.get_by_role("button", name="Ok").click()
-        # TODO: either this or some kind of error will be visible (check for "(proxy) error" in frame)
-        upload_toast.wait_for(timeout=0)
+        # uploadvenster may show an error, but since its an iframe, checking 'toast or error?' becomes complex 
+        upload_toast.wait_for(timeout=36_000_000) # hence we wait for an hour max
+        if not upload_toast.is_visible():
+            # TODO: try to give more info?
+            log.error(f"Error tijdens het uploaden van {maisxml.name} (is {maisxml.name} te groot?)")
+            return False
         log.info(f"Upload van {maisxml.name} is geslaagd")
         log.info("Wachten tot MAIS de XML heeft verwerkt...")
     elif "fout" in upload_toast.inner_text().lower():

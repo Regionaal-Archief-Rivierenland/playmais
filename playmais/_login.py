@@ -4,7 +4,7 @@ import sys
 import logging
 
 from time import sleep
-from playwright.sync_api import Playwright, sync_playwright, expect, Page
+from playwright.sync_api import expect, Page
 
 log = logging.getLogger(__name__)
 

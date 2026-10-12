@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - run: uv run --with pdoc python -m pdoc \
-        --footer-text "https://github.com/Regionaal-Archief-Rivierenland/playmais" \
         -d google \
         --favicon /playmais/icon.png \
         --logo /playmais/logo.png \

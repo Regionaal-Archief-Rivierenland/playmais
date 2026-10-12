@@ -34,7 +34,7 @@ def upload_maisxml(
         overschrijf_bestaande_inrichting (Optional[bool]): Geeft aan of de
           inrichting van de toegang (ingerichte archiefeenheidsoorten en toegestane
           hiërarchie) overschreven dient te worden. Default is om dit uit te zetten.
-        nieuwe_guids: Maak nieuwe guids voor alle AETs en de top.
+        nieuwe_guids (Optional[bool]): Maak nieuwe guids voor alle AETs en de top.
          Default is true, omdat GUIDs weinig inherente waarde hebben.
 
     Returns:

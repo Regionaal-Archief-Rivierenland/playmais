@@ -3,7 +3,11 @@ from playwright.sync_api import Playwright, sync_playwright, Page
 from time import sleep
 
 def list_toegangsgroepen(page: Page) -> list[str]:
-    """Return lijst met alle namen van toegansgroepen."""
+    """Vraag alle toegangsgroepen op.
+
+    Returns:
+       list[str]: lijst met de namen van alle toegangsgroepen.
+    """
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()
     page.get_by_role("link", name=" Toegangen Beheren van").click()
     sleep(1)

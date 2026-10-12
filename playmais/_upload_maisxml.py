@@ -30,7 +30,7 @@ def upload_maisxml(
         page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
         maisxml (str | Path): pad naar MAIS XML bestand (bijv. "1854_1_102_flexis.txt")
         logfile (Optional[str | Path]): Logfile om het eindresultaat naar te schrijven.
-          Default is een .log bestand naast `maisxml`.
+          Default is een .log bestand naast het bestand in `maisxml`.
         overschrijf_bestaande_inrichting (Optional[bool]): Geeft aan of de
           inrichting van de toegang (ingerichte archiefeenheidsoorten en toegestane
           hiërarchie) overschreven dient te worden. Default is om dit uit te zetten.

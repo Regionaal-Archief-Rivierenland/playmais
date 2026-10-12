@@ -19,6 +19,7 @@ jobs:
             -d google \
             --favicon /playmais/icon.png \
             --logo /playmais/logo.png \
+            --logo-link https://github.com/Regionaal-Archief-Rivierenland/playmais \
             -o docs playmais
       - run: cp assets/*.png docs/
       - uses: actions/upload-pages-artifact@v3

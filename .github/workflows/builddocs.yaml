@@ -14,13 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: cp assets/*.png docs/
       - run: |
           uv run --with pdoc python -m pdoc \
             -d google \
             --favicon /playmais/icon.png \
             --logo /playmais/logo.png \
             -o docs playmais
+      - run: cp assets/*.png docs/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

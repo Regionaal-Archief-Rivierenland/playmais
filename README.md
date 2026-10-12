@@ -43,7 +43,7 @@ $ upload_maisxml 1843_1_102_flexis.txt
 > Als je niet de hele tijd je wachtwoord en gebruikersnaam wilt invoeren, kun je deze in de environment variabelen `MAIS_USER` en `MAIS_PASSWORD` zetten. Deze worden opgepikt door alle CLI programma's en python-functies die gebundeld zijn met playmais.
 
 
-Zie `--help` de van beide programma's voor alle mogelijke opties.
+Zie de `--help`-tekst van beide programma's voor alle mogelijke opties.
 
 # Installatie
 

@@ -29,7 +29,7 @@ def login(page: Page, gebruikersnaam=None, wachtwoord=None):
     """Log in op MAIS. Als inloggen goed gaat kom je op de hoofdpagina.
 
     Als `gebruikersnaam` en `wachtwoord` niet zijn opgegeven, haalt deze functie
-    je inloggegevens uit de _environment variables_ `MAIS_USER` en `MAIS_PASSWORD`.
+    je inloggegevens uit de *environment variables* `MAIS_USER` en `MAIS_PASSWORD`.
     Als deze variabelen niet bestaan vraagt de functie om je inloggegevens via een
     interactieve prompt.
 

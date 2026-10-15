@@ -17,4 +17,4 @@ https://regionaal-archief-rivierenland.github.io/playmais/
 git clone git@github.com:Regionaal-Archief-Rivierenland/playmais.git && sudo pip install . 
 ```
 
-(of zonder sudo als je het voor je gebruiker wilt houden, of met `uv`, etc.) 
+(of zonder `sudo` als je het voor je gebruiker wilt houden, of met `uv`, etc.) 

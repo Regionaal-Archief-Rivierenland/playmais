@@ -1,8 +1,9 @@
 # Playmais - MAIS Playwright library (en scripts)
 
-Playmais is een op playwright-gebaseerde python library om MAIS aan te sturen.
+[[ assets/logo.png | height = 100px ]]
+<!-- ![logo](assets/logo.png) -->
 
-![logo](assets/logo.png)
+Playmais is een op playwright-gebaseerde python library om MAIS aan te sturen.
 
 # Documentatie
 

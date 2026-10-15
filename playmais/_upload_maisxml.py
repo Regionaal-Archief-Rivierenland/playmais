@@ -98,15 +98,22 @@ def upload_maisxml(
     logtext = logtext.lower()
 
     # FIXME: these are probably not all possible error cases
-    # TODO: ORA-xxx in the log is bad news, most of the time
     if (
         re.match(r".*aantal fouten: [1-9]\d*", logtext) # one or more after fouten
         or re.search(r"\bfout\b", logtext) # e.g. "Fout:" or " fout:", but not "fouten"
         or "error" in logtext
         or "onbekende tag" in logtext
         or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
+        or "ORA-" in logtext
     ):
-        log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
+        warning = (
+            f"{maisxml} heeft foutmelding ORA-01555 geproduceert, wat waarschijnlijk "
+            "betekent dat er data verloren is gegaan tijdens het uploaden. "
+            "Hint: probeer de toegang kleiner te maken"
+            if "ORA-01555" in logtext
+            else f"MIAS heeft een fout gevonden in {maisxml}"
+        )
+        log.warn(f"{warning}; zie {logfile} voor meer informatie")
         # The only way to cancel is to wait, for some reason, so wait 8min
         sleep(60 * 8)
         page.reload()

@@ -17,6 +17,7 @@ jobs:
       - run: |
           uv run --with pdoc python -m pdoc \
             -d google \
+            -t templates \
             --favicon /playmais/icon.png \
             --logo /playmais/logo.png \
             --logo-link https://github.com/Regionaal-Archief-Rivierenland/playmais \

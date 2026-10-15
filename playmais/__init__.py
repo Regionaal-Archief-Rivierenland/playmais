@@ -29,7 +29,7 @@ with sync_playwright() as playwright:
 
 Als je deze library installeert, installeer je ook de commandline programma's `download_maisxml` en `upload_maisxml` mee. Ze werken ongeveer hetzelfde als de python functies:
 
-``` shellsession
+``` shell
 # upload 1843 en alle toegangen die beginnen met 17
 $ upload_maisxml 1843_1_102_flexis.txt 17*_1_102_flexis.txt
 ```

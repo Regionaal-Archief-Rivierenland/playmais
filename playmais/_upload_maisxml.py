@@ -13,7 +13,6 @@ def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state:
     if state != checkbox_state:
         checkbox.locator("label").click()
 
-# TODO: i think we need a function that targets a notif by name
 def upload_maisxml(
     page: Page,
     maisxml: str | Path,

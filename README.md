@@ -1,6 +1,6 @@
 # Playmais - MAIS Playwright library (en scripts)
 
-<img src="assets/logo.png" width="48">
+<img src="assets/logo.png" width="96">
 
 <!-- ![logo](assets/logo.png) -->
 

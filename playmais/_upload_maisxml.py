@@ -95,14 +95,15 @@ def upload_maisxml(
     )
     logfile = logfile or maisxml.parent / f"{maisxml.name.split(".")[0]}.log"
     Path(logfile).write_text(logtext)
+    logtext = logtext.lower()
 
     # FIXME: these are probably not all possible error cases
-    # TODO: ORA-xxx in the log is bad news, most of the time 
+    # TODO: ORA-xxx in the log is bad news, most of the time
     if (
-        re.match(r".*aantal fouten: [1-9]\d*", logtext.lower()) # one or more after fouten
-        or re.search(r"\bfout\b", logtext.lower()) # e.g. "Fout:" or " fout:", but not "fouten"
-        or "error" in logtext.lower()
-        or "onbekende tag" in logtext.lower()
+        re.match(r".*aantal fouten: [1-9]\d*", logtext) # one or more after fouten
+        or re.search(r"\bfout\b", logtext) # e.g. "Fout:" or " fout:", but not "fouten"
+        or "error" in logtext
+        or "onbekende tag" in logtext
         or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
     ):
         log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")

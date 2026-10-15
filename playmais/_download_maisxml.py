@@ -20,7 +20,7 @@ def _download_all(page, folder):
 
     # close all toast with status "finished", as they can obfuscate the export button
     for toast in page.locator(".toast", has_text=re.compile("Gereed")).all():
-        # TODO: provide more info (bot not full inner_text, since that is tmi)
+        # TODO: provide more info (but not full inner_text, since that is tmi)
         # TODO: i18n
         log.info(f"Closing toast...")
         toast.get_by_role("button", name="×").click()

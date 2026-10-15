@@ -17,7 +17,7 @@ with sync_playwright() as playwright:
     playmais.login(page)
 
     # upload gecorrigeerde toegang
-    upload_succesvol = playmais.upload_maisxml(page, "/srv/share/maisxml/1843_1_102_flexis.txt")
+    upload_succesvol = playmais.upload_maisxml(page, "1843_1_102_flexis.txt")
     if upload_succesvol:
         # download wat we net geupload hebben
         playmais.download_maisxml_van_toegangcodes(page, toegangcodes=["1843"], folder="/tmp")

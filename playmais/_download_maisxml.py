@@ -59,7 +59,10 @@ def _download_all(page, folder):
             download_dst.unlink()
 
     # good habit to close things
-    page.get_by_role("button", name="×").click()
+    sleep(5)
+    close_btn = page.get_by_role("button", name="×")
+    if close_btn.count(): # this button sometimes refuses to show up
+        close_btn.click()
 
 # FIXME: account for pagination
 def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folder: str | Path):

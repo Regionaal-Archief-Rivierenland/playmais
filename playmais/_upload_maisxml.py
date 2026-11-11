@@ -13,6 +13,19 @@ def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state:
     if state != checkbox_state:
         checkbox.locator("label").click()
 
+def _close_toast_and_uploadvenster(page: Page):
+    sleep(3)
+    page.get_by_role("button", name="OK").click()
+    sleep(5)
+    try:  # keep the try since there may be mutiple close buttons
+        # good habit to close things
+        page.get_by_role("button", name=" Sluiten").click()
+        sleep(1)
+        page.get_by_role("button", name="×").click() # close the toast
+    except:
+        pass
+    
+
 def upload_maisxml(
     page: Page,
     maisxml: str | Path,
@@ -73,7 +86,6 @@ def upload_maisxml(
         log.info(f"Upload van {maisxml.name} is geslaagd")
         log.info("Wachten tot MAIS de XML heeft verwerkt...")
     elif "fout" in upload_toast.inner_text().lower():
-        # TODO: add log? tho this branch is rare and logging adds a tiny bit of complexity
         log.warn(f"MIAS heeft een fout gevonden in {maisxml}")
         return False
     else:
@@ -117,19 +129,9 @@ def upload_maisxml(
         # The only way to cancel is to wait, for some reason, so wait 8min
         sleep(60 * 8)
         page.reload()
-        sleep(3)
-        page.get_by_role("button", name=" Sluiten").click()
-        # upload was niet succesvol
+        _close_toast_and_uploadvenster(page)
         return False
 
-    page.get_by_role("button", name="OK").click()
-
-    try:  # keep the try since there may be mutiple close buttons
-        # good habit to close things
-        page.get_by_role("button", name=" Sluiten").click()
-        page.get_by_role("button", name="×").click() # close the toast
-    except:
-        pass
-
+    _close_toast_and_uploadvenster(page)
     log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
     return True

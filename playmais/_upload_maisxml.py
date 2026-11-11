@@ -99,7 +99,7 @@ def upload_maisxml(
 
     # FIXME: these are probably not all possible error cases
     if (
-        re.match(r".*aantal fouten: [1-9]\d*", logtext) # one or more after fouten
+        re.search(r"aantal fouten: [1-9]", logtext) # one or more after fouten
         or re.search(r"\bfout\b", logtext) # e.g. "Fout:" or " fout:", but not "fouten"
         or "error" in logtext
         or "onbekende tag" in logtext
@@ -109,7 +109,7 @@ def upload_maisxml(
         warning = (
             f"{maisxml} heeft foutmelding ORA-01555 geproduceert, wat waarschijnlijk "
             "betekent dat er data verloren is gegaan tijdens het uploaden. "
-            "Hint: probeer de toegang kleiner te maken"
+            "Hint: Soms werkt het om de toegang kleiner te maken"
             if "ORA-01555" in logtext
             else f"MIAS heeft een fout gevonden in {maisxml}"
         )

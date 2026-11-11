@@ -110,7 +110,7 @@ def upload_maisxml(
             f"{maisxml} heeft foutmelding ORA-01555 geproduceert, wat waarschijnlijk "
             "betekent dat er data verloren is gegaan tijdens het uploaden. "
             "Hint: Soms werkt het om de toegang kleiner te maken"
-            if "ORA-01555" in logtext
+            if "ora-01555" in logtext
             else f"MIAS heeft een fout gevonden in {maisxml}"
         )
         log.warn(f"{warning}; zie {logfile} voor meer informatie")

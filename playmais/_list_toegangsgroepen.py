@@ -1,5 +1,5 @@
 import re
-from playwright.sync_api import Playwright, sync_playwright, Page
+from playwright.sync_api import Page
 from time import sleep
 
 def list_toegangsgroepen(page: Page) -> list[str]:

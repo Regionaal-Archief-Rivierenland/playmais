@@ -104,7 +104,7 @@ def upload_maisxml(
         or "error" in logtext
         or "onbekende tag" in logtext
         or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
-        or "ORA-" in logtext
+        or "ora-" in logtext
     ):
         warning = (
             f"{maisxml} heeft foutmelding ORA-01555 geproduceert, wat waarschijnlijk "

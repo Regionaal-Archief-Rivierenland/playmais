@@ -101,7 +101,7 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     page.get_by_role("button", name="Remove Filter").click()
     sleep(3)
 
-def download_maisxml_van_toegansgroep(page: Page, groepnaam: str, folder: str | Path):
+def download_maisxml_van_toegangsgroep(page: Page, groepnaam: str, folder: str | Path):
     """Download alle MAIS XML uit een bepaalde toegangsgroep.
 
     Args:
@@ -123,6 +123,6 @@ def download_maisxml_van_toegansgroep(page: Page, groepnaam: str, folder: str | 
     log.info(f"Toegangsgroep '{groepnaam}' aan het downloaden...")
     _download_all(page, folder)
     log.info(f"Toegangsgroep '{groepnaam}' is gedownload ✅")
-    # Reset toegansgroep filter
+    # Reset toegangsgroep filter
     page.get_by_label("Toegangsgroep").select_option("")
     sleep(3)

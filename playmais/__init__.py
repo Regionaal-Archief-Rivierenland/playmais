@@ -42,14 +42,14 @@ Zie de `--help`-tekst van beide programma's voor alle mogelijke opties.
 
 from ._login import login
 from ._upload_maisxml import upload_maisxml
-from ._download_maisxml import download_maisxml_van_toegangcodes, download_maisxml_van_toegansgroep
+from ._download_maisxml import download_maisxml_van_toegangcodes, download_maisxml_van_toegangsgroep
 from ._list_toegangsgroepen import list_toegangsgroepen
 
 import logging as _logging
 import os
 
 __all__ = [
-    "download_maisxml_van_toegansgroep",
+    "download_maisxml_van_toegangsgroep",
     "download_maisxml_van_toegangcodes",
     "upload_maisxml",
     "login",

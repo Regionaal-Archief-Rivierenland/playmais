@@ -65,13 +65,13 @@ def _download_all(page, folder):
         close_btn.click()
 
 # FIXME: account for pagination
-def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folder: str | Path):
+def download_maisxml_van_toegangscodes(page: Page, toegangscodes: list[str], folder: str | Path):
     """Download MAIS XML van de gegeven toegangscodes.
 
 
     Args:
         page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
-        toegangcodes (list[str]): lijst van toegangcodes om te downloaden
+        toegangscodes (list[str]): lijst van toegangscodes om te downloaden
         folder (str | Path): Folder om de MAIS XML in te downloaden
     """
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()
@@ -85,17 +85,17 @@ def download_maisxml_van_toegangcodes(page: Page, toegangcodes: list[str], folde
     sleep(6)
     page.get_by_role("textbox", name="Waarde").click()
 
-    toegangcodes_regex = "|".join(toegangcodes)
-    page.get_by_role("textbox", name="Waarde").fill(f"^({toegangcodes_regex})$")
+    toegangscodes_regex = "|".join(toegangscodes)
+    page.get_by_role("textbox", name="Waarde").fill(f"^({toegangscodes_regex})$")
     page.get_by_role("button", name="Opslaan").click()
     sleep(5)
 
     if page.locator("#toegangen_ig_ig_grid_vc").get_by_text("Er zijn geen gegevens").is_visible():
-        raise ValueError(f"Toegang(en) {','.join(toegangcodes)} lijken niet te bestaan")
+        raise ValueError(f"Toegang(en) {','.join(toegangscodes)} lijken niet te bestaan")
         
-    log.info(f"Toegang(en) {", ".join(toegangcodes)} aan het downloaden...")
+    log.info(f"Toegang(en) {", ".join(toegangscodes)} aan het downloaden...")
     _download_all(page, folder)
-    log.info(f"Toegang(en) {", ".join(toegangcodes)} zijn gedownload ✅")
+    log.info(f"Toegang(en) {", ".join(toegangscodes)} zijn gedownload ✅")
     sleep(2)
     # cleanup filter we just applied
     page.get_by_role("button", name="Remove Filter").click()
@@ -106,7 +106,7 @@ def download_maisxml_van_toegangsgroep(page: Page, groepnaam: str, folder: str |
 
     Args:
         page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
-        toegangcodes (str): Naam van de toegangsgroep om te downloaden
+        toegangscodes (str): Naam van de toegangsgroep om te downloaden
         folder (str | Path): Folder om de MAIS XML in te downloaden
     """
     page.locator("div").filter(has_text=re.compile(r"^Beheren$")).click()

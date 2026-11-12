@@ -88,6 +88,9 @@ def upload_maisxml(
     elif "fout" in upload_toast.inner_text().lower():
         log.warn(f"MIAS heeft een fout gevonden in {maisxml}")
         return False
+    elif "geannuleerd" in upload_toast.inner_text().lower():
+        # closely previously failed toast
+        page.get_by_role("button", name="×").click()
     else:
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 

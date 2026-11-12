@@ -70,7 +70,7 @@ def download_maisxml_van_toegangscodes(page: Page, toegangscodes: list[str], fol
 
 
     Args:
-        page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
+        page (Page): playwright pagina-object. Wordt in-place aangepast.
         toegangscodes (list[str]): lijst van toegangscodes om te downloaden
         folder (str | Path): Folder om de MAIS XML in te downloaden
     """
@@ -105,7 +105,7 @@ def download_maisxml_van_toegangsgroep(page: Page, groepnaam: str, folder: str |
     """Download alle MAIS XML uit een bepaalde toegangsgroep.
 
     Args:
-        page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
+        page (Page): playwright pagina-object. Wordt in-place aangepast.
         toegangscodes (str): Naam van de toegangsgroep om te downloaden
         folder (str | Path): Folder om de MAIS XML in te downloaden
     """

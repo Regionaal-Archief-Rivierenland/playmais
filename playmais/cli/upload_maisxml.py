@@ -50,7 +50,8 @@ def main():
 
         for file in args.files:
             retries_on_error = args.retries_on_error
-            while retries_on_error:
+            upload_in_progress = True
+            while retries_on_error and upload_in_progress:
                 try:
                     playmais.upload_maisxml(
                         page,
@@ -58,28 +59,23 @@ def main():
                         nieuwe_guids=args.behoud_guids,
                         overschrijf_bestaande_inrichting=args.overschrijf_inrichting,
                     )
+                    upload_in_progress = False
                 except PlaywrightError as e:
                     increment_delay = ((args.retries_on_error - retries_on_error) + 1)**1.2
                     retries_on_error -= 1
                     retry_after_mins = 3 * increment_delay
                     log.warning(f"Playwright gaf een error tijdens het uploaden:\n   {e}")
+
                     if retries_on_error == 0:
-                        break
-                    log.info(
-                        f"Upload wordt over {int(retry_after_mins)} minuten opnieuw geprobeerd"
-                    )
+                        log.error(f"Teveel errors tijdens upload van {file}; upload geannuleerd")
+                        exit(-1)
+
+                    log.info(f"Upload wordt over {int(retry_after_mins)} minuten opnieuw geprobeerd")
                     sleep(60 * retry_after_mins)
                     # login again, to be safe
                     page = context.new_page()
                     playmais.login(page)
                     continue
-
-            # failed the max amount of times
-            if retries_on_error == 0:
-                log.error(
-                    f"Teveel playwright errors tijdens het uploaden van {file}; upload geannuleerd"
-                )
-                exit(-1)
 
             page.reload()
             sleep(2)

@@ -126,7 +126,7 @@ def upload_maisxml(
             "betekent dat er data verloren is gegaan.\n "
             "Hint: Soms werkt het om de toegang kleiner te maken"
             if "ora-01555" in logtext
-            else f"MIAS heeft een fout gevonden in {maisxml}"
+            else f"MIAS heeft een fout gevonden in {maisxml.name}"
         )
         log.warn(f"{warning}; zie {logfile} voor meer informatie")
         # The only way to cancel is to wait, for some reason, so wait 8min
@@ -136,5 +136,5 @@ def upload_maisxml(
         return False
 
     _close_toast_and_uploadvenster(page)
-    log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
+    log.info(f"{maisxml.name} lijkt foutloos verwerkt ✅")
     return True

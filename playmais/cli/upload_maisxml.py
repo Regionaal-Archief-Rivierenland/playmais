@@ -64,7 +64,7 @@ def main():
                     increment_delay = ((args.retries_on_error - retries_on_error) + 1)**1.2
                     retries_on_error -= 1
                     retry_after_mins = 3 * increment_delay
-                    log.warning(f"Playwright-error tijdens het uploaden:\n   {e}")
+                    log.warning(f"Playwright-error tijdens het uploaden:\n\t{e.rstrip()}")
 
                     if retries_on_error == 0:
                         log.error(f"Teveel errors tijdens upload van {file}; upload geannuleerd")

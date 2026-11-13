@@ -129,9 +129,6 @@ def upload_maisxml(
             else f"MIAS heeft een fout gevonden in {maisxml.name}"
         )
         log.warn(f"{warning}; zie {logfile} voor meer informatie")
-        # The only way to cancel is to wait, for some reason, so wait 8min
-        sleep(60 * 8)
-        page.reload()
         _close_toast_and_uploadvenster(page)
         return False
 

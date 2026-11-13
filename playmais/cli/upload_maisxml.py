@@ -69,6 +69,9 @@ def main():
                         f"Upload wordt over {int(retry_after_mins)} minuten opnieuw geprobeerd"
                     )
                     sleep(60 * retry_after_mins)
+                    # login again, to be safe
+                    page = context.new_page()
+                    playmais.login(page)
                     continue
 
             # failed the max amount of times

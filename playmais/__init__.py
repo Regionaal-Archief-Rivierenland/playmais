@@ -44,6 +44,7 @@ from ._login import login
 from ._upload_maisxml import upload_maisxml
 from ._download_maisxml import download_maisxml_van_toegangscodes, download_maisxml_van_toegangsgroep
 from ._list_toegangsgroepen import list_toegangsgroepen
+from ._list_toegangscodes import list_toegangscodes
 
 import logging as _logging
 import os
@@ -53,6 +54,7 @@ __all__ = [
     "download_maisxml_van_toegangscodes",
     "upload_maisxml",
     "login",
+    "list_toegangscodes",
     "list_toegangsgroepen",
 ]
 

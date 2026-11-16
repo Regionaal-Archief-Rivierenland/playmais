@@ -10,7 +10,7 @@ example_usage = f"""Bijvoorbeeld:
   {dim_s}# Download meerdere groepen{dim_e}
   download_maisxml Affiches AV-collectie "Uitplaatsing Culemborg"
 
-  {dim_s}# Download specifiecke toegangcodes{dim_e}
+  {dim_s}# Download specifiecke toegangscodes{dim_e}
   download_maisxml -c 1854 1722
 
   {dim_s}# Zowel codes als groepnamen{dim_e}
@@ -29,7 +29,7 @@ def main():
     )
     parser.add_argument(
         "-c",
-        "--toegangcodes",
+        "--toegangscodes",
         help="Toegangcode(s) om te downloaden. Niet verplicht, en kan samen met groepnamen worden gebruikt.",
         metavar="CODE",
         nargs="+",
@@ -59,8 +59,15 @@ def main():
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=not args.no_headless)
         # TODO: set this everywhere. Nicer debugging experience and makes MAIS less stupid
-        # context = browser.new_context(viewport={"width": 1920, "height": 1080})
-        context = browser.new_context()
+        if args.no_headless:
+            width = 1280
+            height = 820
+        else:
+            width = 1920
+            height = 1080
+
+        context = browser.new_context(viewport={"width": width, "height": height})
+        # context = browser.new_context()
         page = context.new_page()
 
         if args.list_toegangsgroepen:
@@ -75,10 +82,10 @@ def main():
             return
 
         for groepnaam in args.groepnaam:
-            playmais.download_maisxml_van_toegansgroep(page, groepnaam, args.output_directory)
+            playmais.download_maisxml_van_toegangsgroep(page, groepnaam, args.output_directory)
         
-        if args.toegangcodes:
-            playmais.download_maisxml_van_toegangcodes(page, args.toegangcodes, args.output_directory)
+        if args.toegangscodes:
+            playmais.download_maisxml_van_toegangscodes(page, args.toegangscodes, args.output_directory)
 
         page.reload()
         sleep(1)

@@ -13,7 +13,48 @@ def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state:
     if state != checkbox_state:
         checkbox.locator("label").click()
 
-# TODO: i think we need a function that targets a notif by name
+def _close_toast_and_uploadvenster(page: Page):
+    sleep(3)
+    page.get_by_role("button", name="OK").click()
+    sleep(5)
+    try:  # keep the try since there may be mutiple close buttons
+        # good habit to close things
+        page.get_by_role("button", name=" Sluiten").click()
+        sleep(1)
+        page.get_by_role("button", name="×").click() # close the toast
+    except:
+        pass
+    
+def _start_new_upload(
+    page: Page,
+    maisxml: str | Path,
+    overschrijf_bestaande_inrichting: bool,
+    nieuwe_guids: bool,
+):
+    # we don't do anything with the toegangscode, but its nice to know where the file will end up
+    target_toegang = re.match(r"^(.*?)_", maisxml.name)
+    log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+    page.get_by_role("button", name="Importeren").click()
+    uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
+    sleep(4)
+    _set_checkbox_state(uploadvenster, "#P218_OVERSCHRIJF_INRICHTING_CONTAINER", overschrijf_bestaande_inrichting)
+    _set_checkbox_state(uploadvenster, "#P218_NIEUWE_GUIDS_CONTAINER", nieuwe_guids)
+
+    uploadvenster.locator("input[type='file']").set_input_files(maisxml)
+    if not uploadvenster.get_by_text(maisxml.name).is_visible(): # filename in uploadvenster?
+        log.warn(f"Upload van {maisxml.name} is niet geslaagd")
+        uploadvenster.get_by_role("button", name="Annuleren").click()
+        return False
+
+    uploadvenster.get_by_role("button", name="Ok").click()
+    # uploadvenster may show an error, but since its an iframe, checking 'toast or error?' becomes complex
+    upload_toast.wait_for(timeout=3_000_000) # hence we wait for ± an hour max
+    if not upload_toast.is_visible():
+        log.error(f"Error tijdens het uploaden van {maisxml.name} (is {maisxml.name} te groot?)")
+        return False
+    log.info(f"Upload van {maisxml.name} is geslaagd")
+    log.info("Wachten tot MAIS de XML heeft verwerkt...")
+
 def upload_maisxml(
     page: Page,
     maisxml: str | Path,
@@ -22,9 +63,8 @@ def upload_maisxml(
     nieuwe_guids: bool = True,
 ) -> bool:
     """Upload een MAIS XML bestand naar een toegang. De juiste toegang wordt uit
-    de MAIS XML afgeleid.
-
-    Deze functie gaat uit van een page object waarop al is ingelogd.
+    de MAIS XML afgeleid. Wanneer een upload sessie reeds gestart is, wordt die
+    sessie hervat.
 
     Args:
         page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
@@ -41,42 +81,23 @@ def upload_maisxml(
         bool: Boolean die aangeeft of upload succesvol was of niet.
     """
     maisxml = Path(maisxml)
-    # we don't do anything with the toegang code, but its nice to know where the file is going to go to
-    target_toegang = re.match(r"^(.*?)_", maisxml.name)
 
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()
     sleep(2)
 
     # check if upload is already in progress
-    upload_toast = page.locator(".toast-message", has_text=f"Bezig met importeren van {maisxml.name}")
+    upload_toast = page.locator(".toast", has_text=re.compile(f"Bezig met importeren van {maisxml.name}"))
     if not upload_toast.count():
-        log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
-        page.get_by_role("button", name="Importeren").click()
-        uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
-        sleep(4)
-        _set_checkbox_state(uploadvenster, "#P218_OVERSCHRIJF_INRICHTING_CONTAINER", overschrijf_bestaande_inrichting)
-        _set_checkbox_state(uploadvenster, "#P218_NIEUWE_GUIDS_CONTAINER", nieuwe_guids)
-
-        uploadvenster.locator("input[type='file']").set_input_files(maisxml)
-        if not uploadvenster.get_by_text(maisxml.name).is_visible(): # filename in uploadvenster?
-            log.warn(f"Upload van {maisxml.name} is niet geslaagd")
-            uploadvenster.get_by_role("button", name="Annuleren").click()
-            return False
-
-        uploadvenster.get_by_role("button", name="Ok").click()
-        # uploadvenster may show an error, but since its an iframe, checking 'toast or error?' becomes complex 
-        upload_toast.wait_for(timeout=36_000_000) # hence we wait for an hour max
-        if not upload_toast.is_visible():
-            # TODO: try to give more info?
-            log.error(f"Error tijdens het uploaden van {maisxml.name} (is {maisxml.name} te groot?)")
-            return False
-        log.info(f"Upload van {maisxml.name} is geslaagd")
-        log.info("Wachten tot MAIS de XML heeft verwerkt...")
+        _start_new_upload(page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     elif "fout" in upload_toast.inner_text().lower():
-        # TODO: add log? tho this branch is rare and logging adds a tiny bit of complexity
         log.warn(f"MIAS heeft een fout gevonden in {maisxml}")
         return False
+    elif "geannuleerd" in upload_toast.inner_text().lower():
+        # closely previously failed toast
+        upload_toast.get_by_role("button", name="×").click()
+        log.info("Toast van eerdere, gefaalde upload sessie gesloten")
+        _start_new_upload(page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     else:
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 
@@ -96,33 +117,28 @@ def upload_maisxml(
     )
     logfile = logfile or maisxml.parent / f"{maisxml.name.split(".")[0]}.log"
     Path(logfile).write_text(logtext)
+    logtext = logtext.lower()
 
     # FIXME: these are probably not all possible error cases
-    # TODO: ORA-xxx in the log is bad news, most of the time 
     if (
-        re.match(r".*aantal fouten: [1-9]\d*", logtext.lower()) # one or more after fouten
-        or re.search(r"\bfout\b", logtext.lower()) # e.g. "Fout:" or " fout:", but not "fouten"
-        or "error" in logtext.lower()
-        or "onbekende tag" in logtext.lower()
+        re.search(r"aantal fouten: [1-9]", logtext) # one or more after fouten
+        or re.search(r"\bfout\b", logtext) # e.g. "Fout:" or " fout:", but not "fouten"
+        or "error" in logtext
+        or "onbekende tag" in logtext
         or logtext.count("\n") > 42 # more than 42 lines is probably also problematic
+        or "ora-" in logtext
     ):
-        log.warn(f"MIAS heeft een fout gevonden in {maisxml}; zie {logfile} voor meer informatie")
-        # The only way to cancel is to wait, for some reason, so wait 8min
-        sleep(60 * 8)
-        page.reload()
-        sleep(3)
-        page.get_by_role("button", name=" Sluiten").click()
-        # upload was niet succesvol
+        warning = (
+            f"uploaden van {maisxml} gaf foutmelding ORA-01555, wat meestal "
+            "betekent dat er data verloren is gegaan.\n "
+            "Hint: Soms werkt het om de toegang kleiner te maken"
+            if "ora-01555" in logtext
+            else f"MIAS heeft een fout gevonden in {maisxml.name}"
+        )
+        log.warn(f"{warning}; zie {logfile} voor meer informatie")
+        _close_toast_and_uploadvenster(page)
         return False
 
-    page.get_by_role("button", name="OK").click()
-
-    try:  # keep the try since there may be mutiple close buttons
-        # good habit to close things
-        page.get_by_role("button", name=" Sluiten").click()
-        page.get_by_role("button", name="×").click() # close the toast
-    except:
-        pass
-
-    log.info(f"{maisxml} lijkt foutloos verwerkt ✅")
+    _close_toast_and_uploadvenster(page)
+    log.info(f"{maisxml.name} lijkt foutloos verwerkt ✅")
     return True

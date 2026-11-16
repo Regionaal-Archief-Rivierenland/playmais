@@ -25,7 +25,19 @@ if upload_succesvol:
      pm.upload_maisxml("1854_1_102_flexis.txt")
 ```
 
-Voor meer informatie over het doorgeven van inloggevens aan een Playmais, zie
+# CLI gebruik
+
+Als je deze library installeert, installeer je ook de commandline programma's `download_maisxml` en `upload_maisxml` mee. Ze werken ongeveer hetzelfde als de python functies:
+
+``` shell
+# upload 1843 en alle toegangen die beginnen met 17
+$ upload_maisxml 1843_1_102_flexis.txt 17*_1_102_flexis.txt
+```
+
+.. note::
+    Als je niet de hele tijd je wachtwoord en gebruikersnaam wilt invoeren, kun je deze in de environment variabelen `MAIS_USER` en `MAIS_PASSWORD` zetten. Deze worden opgepikt door alle CLI programma's en python-functies die gebundeld zijn met playmais.
+
+Zie de `--help`-tekst van beide programma's voor alle mogelijke opties.
 
 # Browser-instanties managen
 
@@ -59,13 +71,15 @@ with Playmais() as playmais:
 
 from .playmais import Playmais
 from ._upload_maisxml import upload_maisxml
-from ._download_maisxml import download_maisxml_van_toegangcodes, download_maisxml_van_toegansgroep
+from ._download_maisxml import download_maisxml_van_toegangscodes, download_maisxml_van_toegangsgroep
 from ._list_toegangsgroepen import list_toegangsgroepen
+from ._list_toegangscodes import list_toegangscodes
 
 __all__ = [
-    "download_maisxml_van_toegansgroep",
-    "download_maisxml_van_toegangcodes",
+    "download_maisxml_van_toegangsgroep",
+    "download_maisxml_van_toegangscodes",
     "upload_maisxml",
     "login",
+    "list_toegangscodes",
     "list_toegangsgroepen",
 ]

@@ -32,8 +32,10 @@ def _start_new_upload(
     nieuwe_guids: bool,
 ):
     # we don't do anything with the toegangscode, but its nice to know where the file will end up
-    target_toegang = re.match(r"^(.*?)_", maisxml.name)
-    log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+    # TODO: actually extract toegang name
+    if target_toegang := re.match(r"(.+?)[_\.]", maisxml.name):
+        log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+
     page.get_by_role("button", name="Importeren").click()
     uploadvenster = page.locator('iframe[title="Importeren"]').content_frame
     sleep(4)

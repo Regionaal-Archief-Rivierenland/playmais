@@ -31,7 +31,7 @@ def main():
         "-o",
         "--overschrijf-inrichting",
         help="Overschrijf bestaande inrichting",
-        action="store_true",
+        action="store_false",
     )
     parser.add_argument(
         "-r",

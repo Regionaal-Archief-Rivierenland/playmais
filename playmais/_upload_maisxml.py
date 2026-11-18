@@ -48,6 +48,7 @@ def _start_new_upload(
 
     uploadvenster.get_by_role("button", name="Ok").click()
     # uploadvenster may show an error, but since its an iframe, checking 'toast or error?' becomes complex
+    upload_toast = page.locator(".toast", has_text=re.compile(f"Bezig met importeren van {maisxml.name}"))
     upload_toast.wait_for(timeout=3_000_000) # hence we wait for ± an hour max
     if not upload_toast.is_visible():
         log.error(f"Error tijdens het uploaden van {maisxml.name} (is {maisxml.name} te groot?)")

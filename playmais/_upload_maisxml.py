@@ -1,6 +1,6 @@
 import re
 import logging
-from maisxml import is_fixed as maisxml_has_been_fixed
+from maisxml import maisxml_has_been_fixed
 from maisxml import defix as defix_maisxml
 from playwright.sync_api import Playwright, sync_playwright, expect, Page
 from time import sleep

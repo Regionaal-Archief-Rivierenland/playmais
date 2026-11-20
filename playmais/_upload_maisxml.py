@@ -1,5 +1,7 @@
 import re
 import logging
+from maisxml import is_fixed as maisxml_has_been_fixed
+from maisxml import defix as defix_maisxml
 from playwright.sync_api import Playwright, sync_playwright, expect, Page
 from time import sleep
 from pathlib import Path
@@ -84,6 +86,12 @@ def upload_maisxml(
         bool: Boolean die aangeeft of upload succesvol was of niet.
     """
     maisxml = Path(maisxml)
+    # TODO: move to general validation function that also inspects inrichting and top info
+    # MAIS doesn't accept fixed/real xml!
+    if maisxml_has_been_fixed(maisxml):
+        log.info(f"{maisxml.name} lijkt normale XML; "
+                 "het bestand wordt terug getransformeerd naar MAIS XML...")
+        defix_maisxml(maisxml)
 
     page.get_by_role("treeitem", name="Beheren").click()
     page.get_by_role("treeitem", name="Toegangen", exact=True).click()

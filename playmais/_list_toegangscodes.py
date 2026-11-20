@@ -1,5 +1,6 @@
 import logging
 import re
+from ._helpers import retry_on_playwright_error
 from time import sleep
 
 log = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ def _extract_toegangscodes_from_table(self) -> list[str]:
 # TODO: get this from the table is kinda inefficient. You could rewrite this to
 # analyze the csv you get if you click "Acties>download rapport".
 # While the superior approach, this whole function isn't super useful atm
+@retry_on_playwright_error(retries=7, minutes_to_sleep=2, sleep_exponent=1)
 def list_toegangscodes(groepnaam: Optional[str | None] = None) -> set[str]:
     """Vind ("list") toegangscodes, bijvoorbeeld alle codes binnen de toegangsgroep
     `groepnaam`.

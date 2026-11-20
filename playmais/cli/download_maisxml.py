@@ -3,7 +3,6 @@ import logging
 from pathlib import Path
 import playmais
 from time import sleep
-from playwright.sync_api import sync_playwright
 
 dim_s, dim_e = "\033[90m", "\033[0m"
 example_usage = f"""Bijvoorbeeld:
@@ -56,36 +55,21 @@ def main():
     )
     args = parser.parse_args()
 
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=not args.no_headless)
-        # TODO: set this everywhere. Nicer debugging experience and makes MAIS less stupid
-        if args.no_headless:
-            width = 1280
-            height = 820
-        else:
-            width = 1920
-            height = 1080
+    if args.list_toegangsgroepen:
+        # be quiet
+        log = logging.getLogger(__name__)
+        logging.disable(logging.INFO)
 
-        context = browser.new_context(viewport={"width": width, "height": height})
-        # context = browser.new_context()
-        page = context.new_page()
-
+    with playmais.Playmais(headless=not args.no_headless) as pm:
         if args.list_toegangsgroepen:
-            # be quiet
-            log = logging.getLogger(__name__)
-            logging.disable(logging.INFO)
-
-        playmais.login(page)
-
-        if args.list_toegangsgroepen:
-            print("\n".join(playmais.list_toegangsgroepen(page)))
+            print("\n".join(pm.list_toegangsgroepen()))
             return
 
         for groepnaam in args.groepnaam:
-            playmais.download_maisxml_van_toegangsgroep(page, groepnaam, args.output_directory)
-        
-        if args.toegangscodes:
-            playmais.download_maisxml_van_toegangscodes(page, args.toegangscodes, args.output_directory)
+            pm.download_maisxml_van_toegangsgroep(groepnaam, args.output_directory)
 
-        page.reload()
+        if args.toegangscodes:
+            pm.download_maisxml_van_toegangscodes(args.toegangscodes, args.output_directory)
+
+        pm.reload()
         sleep(1)

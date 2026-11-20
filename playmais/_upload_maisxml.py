@@ -1,13 +1,12 @@
 import re
 import logging
-from maisxml import maisxml_has_been_fixed
-from maisxml import defix as defix_maisxml
-from playwright.sync_api import Playwright, sync_playwright, expect, Page
 from time import sleep
 from pathlib import Path
+from maisxml import maisxml_has_been_fixed
+from maisxml import defix as defix_maisxml
+from ._helpers import retry_on_playwright_error
 
 log = logging.getLogger(__name__)
-
 
 def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state: bool):
     checkbox = uploadvenster.locator(f"{checkbox_locator} > .t-Form-inputContainer")
@@ -15,20 +14,20 @@ def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state:
     if state != checkbox_state:
         checkbox.locator("label").click()
 
-def _close_toast_and_uploadvenster(page: Page):
+def _close_toast_and_uploadvenster(self):
     sleep(3)
-    page.get_by_role("button", name="OK").click()
+    self.page.get_by_role("button", name="OK").click()
     sleep(5)
     try:  # keep the try since there may be mutiple close buttons
         # good habit to close things
-        page.get_by_role("button", name=" Sluiten").click()
+        self.page.get_by_role("button", name=" Sluiten").click()
         sleep(1)
-        page.get_by_role("button", name="×").click() # close the toast
+        self.page.get_by_role("button", name="×").click() # close the toast
     except:
         pass
     
 def _start_new_upload(
-    page: Page,
+    self,
     maisxml: str | Path,
     overschrijf_bestaande_inrichting: bool,
     nieuwe_guids: bool,
@@ -60,8 +59,9 @@ def _start_new_upload(
     log.info(f"Upload van {maisxml.name} is geslaagd")
     log.info("Wachten tot MAIS de XML heeft verwerkt...")
 
+@retry_on_playwright_error()
 def upload_maisxml(
-    page: Page,
+    self,
     maisxml: str | Path,
     logfile: str | Path = None,
     overschrijf_bestaande_inrichting: bool = False,
@@ -72,7 +72,6 @@ def upload_maisxml(
     sessie hervat.
 
     Args:
-        page (Page): playwright pagina-object. Wordt in-place aangepast; eindigt op de homepage.
         maisxml (str | Path): pad naar MAIS XML bestand om te uploaden (bijv. "1854_1_102_flexis.txt")
         logfile (Optional[str | Path]): Logfile om het eindresultaat naar te schrijven.
           Default is een .log bestand naast het bestand in `maisxml`.
@@ -93,14 +92,14 @@ def upload_maisxml(
                  "het bestand wordt terug getransformeerd naar MAIS XML...")
         defix_maisxml(maisxml)
 
-    page.get_by_role("treeitem", name="Beheren").click()
-    page.get_by_role("treeitem", name="Toegangen", exact=True).click()
+    self.page.get_by_role("treeitem", name="Beheren").click()
+    self.page.get_by_role("treeitem", name="Toegangen", exact=True).click()
     sleep(2)
 
     # check if upload is already in progress
-    upload_toast = page.locator(".toast", has_text=re.compile(f"Bezig met importeren van {maisxml.name}"))
+    upload_toast = self.page.locator(".toast", has_text=re.compile(f"Bezig met importeren van {maisxml.name}"))
     if not upload_toast.count():
-        _start_new_upload(page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
+        self._start_new_upload(maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     elif "fout" in upload_toast.inner_text().lower():
         log.warn(f"MIAS heeft een fout gevonden in {maisxml}")
         return False
@@ -108,20 +107,20 @@ def upload_maisxml(
         # closely previously failed toast
         upload_toast.get_by_role("button", name="×").click()
         log.info("Toast van eerdere, gefaalde upload sessie gesloten")
-        _start_new_upload(page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
+        self._start_new_upload(maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     else:
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 
     # TODO: maybe this shouldn't be infinite?
     while not "Wacht op beoordeling" in upload_toast.inner_text():
-        page.reload()
-        sleep(45)
+        self.page.reload()
+        sleep(40)
         voortang = re.search(r"Voortgang:.*resterend", upload_toast.inner_text())
         print(f"\033[K{voortang.group() if voortang else ''}", end="\r", flush=True)
 
     sleep(7)
     logtext = (
-        page.locator('iframe[title="Logging"]')
+        self.page.locator('iframe[title="Logging"]')
         .content_frame.locator("div.t-Region-body")
         .filter(has_text="Import gestart")
         .inner_text()
@@ -147,9 +146,9 @@ def upload_maisxml(
             else f"MIAS heeft een fout gevonden in {maisxml.name}"
         )
         log.warn(f"{warning}; zie {logfile} voor meer informatie")
-        _close_toast_and_uploadvenster(page)
+        self._close_toast_and_uploadvenster()
         return False
 
-    _close_toast_and_uploadvenster(page)
+    self._close_toast_and_uploadvenster()
     log.info(f"{maisxml.name} lijkt foutloos verwerkt ✅")
     return True

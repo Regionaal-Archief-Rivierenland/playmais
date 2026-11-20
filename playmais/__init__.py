@@ -1,28 +1,28 @@
 """
-Library om MAIS-Flexis aan te sturen via playwright.
+Playmais is een library om MAIS-Flexis aan te sturen via playwright.
 
 # Quickstart
 
-Simpel voorbeeld van de stappen die je nodig hebt om een toegang te uploaden:
+MAIS XML uploaden is een kwestie van een `Playmais`-object aanmaken, en de
+`upload_maisxml`-methode aanroepen:
 
 ```python
-import playmais
-from playwright.sync_api import sync_playwright
+from playmais import Playmais
 
-with sync_playwright() as playwright:
-    browser = playwright.chromium.launch()
-    context = browser.new_context()
-    page = context.new_page()
+playmais = Playmais()
+upload_succesvol = playmais.upload_maisxml("1854_1_102_flexis.txt")
+if upload_succesvol:
+     # download wat we net geupload hebben
+     playmais.download_maisxml_van_toegangcodes(toegangcodes=["1854"], folder="/tmp")
+ else:
+     ...
+ # calling .close() is optional, but recommended if you need to do a lot of
+ # work *after* all playwright automation is finished
+ playmais.close() # tear down browser and playwright controller
 
-    playmais.login(page)
-
-    # upload gecorrigeerde toegang
-    upload_succesvol = playmais.upload_maisxml(page, "1843_1_102_flexis.txt")
-    if upload_succesvol:
-        # download wat we net geupload hebben
-        playmais.download_maisxml_van_toegangscodes(page, toegangscodes=["1843"], folder="/tmp")
-    else:
-        ...
+ # Alternatively, you can use with-block, which will automatically run .close()
+ with Playmais() as pm:
+     pm.upload_maisxml("1854_1_102_flexis.txt")
 ```
 
 # CLI gebruik
@@ -38,6 +38,35 @@ $ upload_maisxml 1843_1_102_flexis.txt 17*_1_102_flexis.txt
     Als je niet de hele tijd je wachtwoord en gebruikersnaam wilt invoeren, kun je deze in de environment variabelen `MAIS_USER` en `MAIS_PASSWORD` zetten. Deze worden opgepikt door alle CLI programma's en python-functies die gebundeld zijn met playmais.
 
 Zie de `--help`-tekst van beide programma's voor alle mogelijke opties.
+
+# Browser-instanties managen
+
+Elk object wat je met `Playmais()` aanmaakt start op de achtergrond nieuwe browser
+op, plus een javascript process wat met deze browser-instantie communiceert. In de
+meeste gevallen zal Python deze processen automatisch voor je sluiten wanneer je
+script stopt.
+
+Soms wil je niet dat deze achtergrond-processen kostbaar werkgeheugen in beslag
+nemen terwijl je script ze niet meer nodig heeft. In dat geval kun je deze
+processen in kwestie vervroeg afsluiten via
+
+```python
+from playmais import Playmais
+playmais = Playmais()
+# doe dingen in MAIS
+...
+# dingen gedaan, tijd om af te sluiten
+playmais.close()
+# doe dingen *buiten* MAIS
+...
+```
+
+Ditzelfde kun je ook met een `with`-block doen:
+
+```python
+with Playmais() as playmais:
+    playmais.upload_maisxml(...)
+```
 """
 
 from .playmais import Playmais

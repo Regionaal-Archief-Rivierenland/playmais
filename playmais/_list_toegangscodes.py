@@ -2,22 +2,25 @@ import logging
 import re
 from ._helpers import retry_on_playwright_error
 from time import sleep
+from playwright.sync_api import Page
 
 log = logging.getLogger(__name__)
 
+
 # returns a list because toegangcodes can be duplicates??
-def _extract_toegangscodes_from_table(self) -> list[str]:
+def _extract_toegangscodes_from_table(page: Page) -> list[str]:
     # we need a fairly specific locator because there are 4(!) tables on this page
     return [
         td.inner_html()
-        for td in self.page.locator("tr[data-rownum] > td:nth-child(2)").all()
+        for td in page.locator("tr[data-rownum] > td:nth-child(2)").all()
     ]
+
 
 # TODO: get this from the table is kinda inefficient. You could rewrite this to
 # analyze the csv you get if you click "Acties>download rapport".
 # While the superior approach, this whole function isn't super useful atm
 @retry_on_playwright_error(retries=7, minutes_to_sleep=2, sleep_exponent=1)
-def list_toegangscodes(groepnaam: Optional[str | None] = None) -> set[str]:
+def list_toegangscodes(self, groepnaam: Optional[str | None] = None) -> set[str]:
     """Vind ("list") toegangscodes, bijvoorbeeld alle codes binnen de toegangsgroep
     `groepnaam`.
 
@@ -48,11 +51,11 @@ def list_toegangscodes(groepnaam: Optional[str | None] = None) -> set[str]:
 
     toegangscodes = []
     volgende_btn = self.page.get_by_role("button", name="Volgende")
-    toegangscodes.extend(self._extract_toegangscodes_from_table())
+    toegangscodes.extend(_extract_toegangscodes_from_table(self.page))
     while volgende_btn.is_enabled():
         volgende_btn.click()
         sleep(4)
-        toegangscodes.extend(self._extract_toegangscodes_from_table())
+        toegangscodes.extend(_extract_toegangscodes_from_table(self.page))
 
     # TODO: is this log useful at all?
     log.info(

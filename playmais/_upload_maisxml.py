@@ -4,6 +4,7 @@ from time import sleep
 from pathlib import Path
 from maisxml import maisxml_has_been_fixed
 from maisxml import defix as defix_maisxml
+from playwright.sync_api import Page
 from ._helpers import retry_on_playwright_error
 
 log = logging.getLogger(__name__)
@@ -14,20 +15,20 @@ def _set_checkbox_state(uploadvenster: Locator, checkbox_locator: string, state:
     if state != checkbox_state:
         checkbox.locator("label").click()
 
-def _close_toast_and_uploadvenster(self):
+def _close_toast_and_uploadvenster(page: Page):
     sleep(3)
-    self.page.get_by_role("button", name="OK").click()
+    page.get_by_role("button", name="OK").click()
     sleep(5)
     try:  # keep the try since there may be mutiple close buttons
         # good habit to close things
-        self.page.get_by_role("button", name=" Sluiten").click()
+        page.get_by_role("button", name=" Sluiten").click()
         sleep(1)
-        self.page.get_by_role("button", name="×").click() # close the toast
+        page.get_by_role("button", name="×").click() # close the toast
     except:
         pass
-    
+
 def _start_new_upload(
-    self,
+    page: Page,
     maisxml: str | Path,
     overschrijf_bestaande_inrichting: bool,
     nieuwe_guids: bool,
@@ -99,15 +100,17 @@ def upload_maisxml(
     # check if upload is already in progress
     upload_toast = self.page.locator(".toast", has_text=re.compile(f"Bezig met importeren van {maisxml.name}"))
     if not upload_toast.count():
-        self._start_new_upload(maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
+        _start_new_upload(self.page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     elif "fout" in upload_toast.inner_text().lower():
-        log.warn(f"MIAS heeft een fout gevonden in {maisxml}")
-        return False
+        # not sure which one of these is true, but a toast may hold either "geannuleerd" or "fout"
+        log.warn(f"Een eerdere upload van {maisxml.name} ging verkeerd, of er zat een fout in het bestand")
+        upload_toast.get_by_role("button", name="×").click()
+        _start_new_upload(self.page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     elif "geannuleerd" in upload_toast.inner_text().lower():
         # closely previously failed toast
-        upload_toast.get_by_role("button", name="×").click()
         log.info("Toast van eerdere, gefaalde upload sessie gesloten")
-        self._start_new_upload(maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
+        upload_toast.get_by_role("button", name="×").click()
+        _start_new_upload(self.page, maisxml, overschrijf_bestaande_inrichting, nieuwe_guids)
     else:
         log.info(f"Wachten op verwerking van {maisxml.name} hervat")
 
@@ -146,9 +149,9 @@ def upload_maisxml(
             else f"MIAS heeft een fout gevonden in {maisxml.name}"
         )
         log.warn(f"{warning}; zie {logfile} voor meer informatie")
-        self._close_toast_and_uploadvenster()
+        _close_toast_and_uploadvenster(self.page)
         return False
 
-    self._close_toast_and_uploadvenster()
+    _close_toast_and_uploadvenster(self.page)
     log.info(f"{maisxml.name} lijkt foutloos verwerkt ✅")
     return True

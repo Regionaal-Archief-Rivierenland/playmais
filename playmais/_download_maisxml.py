@@ -3,6 +3,7 @@ import re
 import zipfile
 from pathlib import Path
 from time import sleep
+from playwright.sync_api import Page
 
 log = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ log = logging.getLogger(__name__)
 # persmission to _see_ a toegang (at least on the Beheren page). These cases can
 # be caught if you check the downloaded results
 # FIXME: this may download the wrong thing if multiple downloads toast are present
-def _download_all(self, folder):
+def _download_all(page: Page, folder):
     """Download alle toegang door ze allemaal tegelijk te selecteren"""
     folder = Path(folder)
     if folder.exists() and not folder.is_dir():
@@ -21,26 +22,26 @@ def _download_all(self, folder):
         toast.get_by_role("button", name="×").click()
         log.info(f"Toast van vorige download sessie gesloten")
 
-    self.page.get_by_role("columnheader", name="Row header ").click(force=True)
+    page.get_by_role("columnheader", name="Row header ").click(force=True)
     sleep(1)
-    self.page.get_by_role("button", name="Bewerkingen ").click(force=True)
+    page.get_by_role("button", name="Bewerkingen ").click(force=True)
     sleep(3)
-    self.page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click(force=True)
+    page.get_by_role("menuitem", name="Exporteren (uitwisselen naar").click(force=True)
     sleep(4)
-    self.page.get_by_role("button", name="OK").click(force=True)
+    page.get_by_role("button", name="OK").click(force=True)
     sleep(5)
 
-    export_toast = self.page.locator(".toast-message", has_text="Exporteren van")
+    export_toast = page.locator(".toast-message", has_text="Exporteren van")
     while export_toast.count() and not "Gereed" in export_toast.inner_text():
         voortang = re.search(r"(Voortgang:.*)|(Exporteren van.*)", export_toast.inner_text())
         print(f"\033[K{voortang.group() if voortang else ''}", end="\r", flush=True)
-        self.reload()
+        page.reload()
         sleep(20)
 
     # click available download links
-    links = self.page.get_by_role("link", name=re.compile(r"^\[.*Download exportbestand "))
+    links = page.get_by_role("link", name=re.compile(r"^\[.*Download exportbestand "))
     for link in links.all():
-        with self.page.expect_download() as download_info:
+        with page.expect_download() as download_info:
             link.click()
 
         download = download_info.value
@@ -60,14 +61,13 @@ def _download_all(self, folder):
         # this is a best effor currently because there can be any number of close
         # buttons, not all of which have something to do with this download
         # session
-        self.page.get_by_role("button", name="×").click()
+        page.get_by_role("button", name="×").click()
     except:
         pass
 
 # FIXME: account for pagination
 def download_maisxml_van_toegangscodes(self, toegangscodes: list[str], folder: str | Path):
     """Download MAIS XML van de gegeven toegangscodes.
-
 
     Args:
         toegangscodes (list[str]): lijst van toegangscodes om te downloaden
@@ -93,7 +93,7 @@ def download_maisxml_van_toegangscodes(self, toegangscodes: list[str], folder: s
         raise ValueError(f"Toegang(en) {','.join(toegangscodes)} lijken niet te bestaan")
         
     log.info(f"Toegang(en) {", ".join(toegangscodes)} aan het downloaden...")
-    self._download_all(folder)
+    _download_all(self.page, folder)
     log.info(f"Toegang(en) {", ".join(toegangscodes)} zijn gedownload ✅")
     sleep(2)
     # cleanup filter we just applied
@@ -119,7 +119,7 @@ def download_maisxml_van_toegangsgroep(self, groepnaam: str, folder: str | Path)
 
     sleep(5)
     log.info(f"Toegangsgroep '{groepnaam}' aan het downloaden...")
-    self._download_all(folder)
+    _download_all(self.page, folder)
     log.info(f"Toegangsgroep '{groepnaam}' is gedownload ✅")
     # Reset toegangsgroep filter
     self.page.get_by_label("Toegangsgroep").select_option("")

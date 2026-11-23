@@ -59,6 +59,6 @@ def list_toegangscodes(self, groepnaam: Optional[str | None] = None) -> set[str]
 
     # TODO: is this log useful at all?
     log.info(
-        f"{len(toegangscodes)} toegangscodes gevonden{'in ' + toegangsgroep if groepnaam else ''}"
+        f"{len(toegangscodes)} toegangscodes gevonden{' in ' + groepnaam if groepnaam else ''}"
     )
     return toegangscodes

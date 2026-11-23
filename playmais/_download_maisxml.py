@@ -17,11 +17,9 @@ def _download_all(self, folder):
         raise ValueError(f"{folder} exists but is not a directory")
 
     # close all toast with status "finished", as they can obfuscate the export button
-    for toast in self.page.locator(".toast", has_text=re.compile("Gereed")).all():
-        # TODO: provide more info (but not full inner_text, since that is tmi)
-        # TODO: i18n
-        log.info(f"Closing toast...")
+    for toast in page.locator(".toast", has_text=re.compile("Gereed")).all():
         toast.get_by_role("button", name="×").click()
+        log.info(f"Toast van vorige download sessie gesloten")
 
     self.page.get_by_role("columnheader", name="Row header ").click(force=True)
     sleep(1)

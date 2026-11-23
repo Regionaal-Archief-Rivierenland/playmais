@@ -99,7 +99,7 @@ class Playmais():
 
     # Why even expose this in first place if __init__ handles this?
     # FIXME: if we expose this, we may need to handle logging out
-    @retry_on_playwright_error(retries=3)
+    @retry_on_playwright_error(retries=12, minutes_to_sleep=10)
     def login(self, gebruikersnaam=None, wachtwoord=None):
         """Log in op MAIS. Als inloggen goed gaat kom je op de hoofdpagina.
 

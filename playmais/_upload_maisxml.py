@@ -34,7 +34,6 @@ def _start_new_upload(
     overschrijf_bestaande_inrichting: bool,
     nieuwe_guids: bool,
 ):
-    # we don't do anything with the toegangscode, but its nice to know where the file will end up
     log.info(f"{maisxml.name} naar toegang {extract_toegangscode(maisxml)} aan het uploaden")
 
     page.get_by_role("button", name="Importeren").click()

@@ -16,7 +16,7 @@ def retry_on_playwright_error(retries=8, minutes_to_sleep=3, sleep_exponent=1.2)
                 except PlaywrightError as e:
                     increment_delay = attempt**sleep_exponent
                     retry_after_mins = minutes_to_sleep * increment_delay
-                    log.warning(f"Playwright-error tijdens {f.__name__}:\n\t{str(e).rstrip()}")
+                    log.warning(f"Playwright-error tijdens \033[94m{f.__name__}\033[0m:\n\t{str(e).rstrip()}")
 
                     if attempt == retries:
                         log.error(f"Teveel Playwright-errors tijdens {f.__name__}; operatie geannuleerd")

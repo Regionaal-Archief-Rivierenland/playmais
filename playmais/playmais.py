@@ -44,6 +44,7 @@ class Playmais():
     def __init__(self, username: Optional[str] = None, password: Optional[str] = None, headless=True, browser=None, context_kwargs=None):
         self._playwright = sync_playwright().start()
         self.browser = browser if browser else self._playwright.chromium.launch(headless=headless)
+        # TODO: use context_kwargs (maybe do the same for browser?)
         self.context = self.browser.new_context(viewport={"width": 1920, "height": 1080})
         # weakref.finalize has the "side-effect" of associating `self` with a
         # custom cleanup method during garbage collection

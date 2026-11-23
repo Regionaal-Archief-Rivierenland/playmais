@@ -70,3 +70,29 @@ with Playmais() as playmais:
 """
 
 from .playmais import Playmais
+import os
+import logging
+
+# register global logger object
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
+# TODO: maybe log submodule name as well?
+# logger config
+if os.environ.get("MAIS_LOGGING_MODE") == "systemd":
+    # systemd already prints timestamps
+    logging.basicConfig(format="%(levelname)s: %(message)s")
+else:
+    logging.basicConfig(
+        format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%d %b %H:%M:%S"
+    )
+
+# colorize warning and error messages
+logging.addLevelName(
+    logging.WARNING,
+    "\033[1;33m%s\033[1;0m" % logging.getLevelName(logging.WARNING),
+)
+logging.addLevelName(
+    logging.ERROR,
+    "\033[1;31m%s\033[1;0m" % logging.getLevelName(logging.ERROR),
+)

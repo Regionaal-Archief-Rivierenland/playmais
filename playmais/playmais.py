@@ -1,36 +1,13 @@
-import logging as logging
-import os
+import logging
 import sys
+import os
 import weakref
-import functools
 from playwright.sync_api import sync_playwright, expect
 from ._helpers import retry_on_playwright_error
 
-# register global logger object
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
-
-# logger config
-if os.environ.get("MAIS_LOGGING_MODE") == "systemd":
-    # systemd already prints timestamps
-    logging.basicConfig(format="%(levelname)s: %(message)s")
-else:
-    logging.basicConfig(
-        format="[%(asctime)s] %(levelname)s: %(message)s", datefmt="%d %b %H:%M:%S"
-    )
-
-# colorize warning and error messages
-logging.addLevelName(
-    logging.WARNING,
-    "\033[1;33m%s\033[1;0m" % logging.getLevelName(logging.WARNING),
-)
-logging.addLevelName(
-    logging.ERROR,
-    "\033[1;31m%s\033[1;0m" % logging.getLevelName(logging.ERROR),
-)
 
 ## Login helpers
-
 def _resolve_password(user):
     if pw := os.environ.get(f"MAIS_PASSWORD") or os.environ.get(f"MAIS_PASS"):
         return pw

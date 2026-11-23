@@ -4,6 +4,7 @@ from time import sleep
 from pathlib import Path
 from maisxml import maisxml_has_been_fixed
 from maisxml import defix as defix_maisxml
+from maisxml import extract_toegangscode
 from playwright.sync_api import Page
 from ._helpers import retry_on_playwright_error
 
@@ -34,9 +35,7 @@ def _start_new_upload(
     nieuwe_guids: bool,
 ):
     # we don't do anything with the toegangscode, but its nice to know where the file will end up
-    # TODO: actually extract toegang name
-    if target_toegang := re.match(r"(.+?)[_\.]", maisxml.name):
-        log.info(f"{maisxml.name} naar toegang {target_toegang.group(1)} aan het uploaden")
+    log.info(f"{maisxml.name} naar toegang {extract_toegangscode(maisxml)} aan het uploaden")
 
     page.get_by_role("button", name="Importeren").click()
     uploadvenster = page.locator('iframe[title="Importeren"]').content_frame

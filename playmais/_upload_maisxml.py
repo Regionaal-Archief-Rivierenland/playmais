@@ -43,8 +43,11 @@ def _start_new_upload(
     _set_checkbox_state(uploadvenster, "#P218_NIEUWE_GUIDS_CONTAINER", nieuwe_guids)
 
     uploadvenster.locator("input[type='file']").set_input_files(maisxml)
-    if not uploadvenster.get_by_text(maisxml.name).is_visible(): # filename in uploadvenster?
-        log.warn(f"Upload van {maisxml.name} is niet geslaagd")
+    if not uploadvenster.get_by_text(maisxml.name).is_visible():  # filename in uploadvenster?
+        log.warn(
+            f"Upload van {maisxml.name} is niet geslaagd"
+            f" (hint: misschien bevat {maisxml} geen MAIS XML)"
+        )
         uploadvenster.get_by_role("button", name="Annuleren").click()
         return False
 

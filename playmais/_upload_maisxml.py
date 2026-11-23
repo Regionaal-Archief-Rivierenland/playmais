@@ -132,9 +132,9 @@ def upload_maisxml(
     Path(logfile).write_text(logtext)
     logtext = logtext.lower()
 
-    # FIXME: these are probably not all possible error cases
+    # these are probably not all possible error cases
     if (
-        re.search(r"aantal fouten: [1-9]", logtext) # one or more after fouten
+        re.search(r"fouten: [1-9]", logtext) # e.g. "aantal fouten: 1"
         or re.search(r"\bfout\b", logtext) # e.g. "Fout:" or " fout:", but not "fouten"
         or "error" in logtext
         or "onbekende tag" in logtext

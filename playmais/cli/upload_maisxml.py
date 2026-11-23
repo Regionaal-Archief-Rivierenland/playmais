@@ -2,13 +2,9 @@ import argparse
 import logging
 import playmais
 from time import sleep
-from playwright.sync_api import sync_playwright
-from playwright.sync_api import Error as PlaywrightError
-
 
 # TODO: return success status?
 def main():
-    default_retries = 8
     log = logging.getLogger(__name__)
 
     # TODO: add n of workers (though this needs more smart matching with notifs etc)
@@ -40,9 +36,6 @@ def main():
         action="store_false",
     )
     args = parser.parse_args()
-    log.info("test")
-    log.warn("test")
-    log.error("test")
     with playmais.Playmais(headless=not args.no_headless) as pm:
         for file in args.files:
             pm.upload_maisxml(

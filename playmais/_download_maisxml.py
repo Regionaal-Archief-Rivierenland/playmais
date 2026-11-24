@@ -7,6 +7,8 @@ from playwright.sync_api import Page
 
 log = logging.getLogger(__name__)
 
+# TODO: now that we know what toegangscodes are in a toegangsgroep, we can actually resume downloads!
+
 # FIXME: in obscure cases, a user (including RAR_ARA) may lack the required
 # persmission to _see_ a toegang (at least on the Beheren page). These cases can
 # be caught if you check the downloaded results

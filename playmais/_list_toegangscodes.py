@@ -6,15 +6,32 @@ from playwright.sync_api import Page
 
 log = logging.getLogger(__name__)
 
-
-# returns a list because toegangcodes can be duplicates??
-def _extract_toegangscodes_from_table(page: Page) -> list[str]:
+def _toegangscodes_in_table(page: Page) -> list[str]:
     # we need a fairly specific locator because there are 4(!) tables on this page
     return [
         td.inner_html()
         for td in page.locator("tr[data-rownum] > td:nth-child(2)").all()
     ]
 
+def _all_toegangscodes_paginate(page: Page) -> list[str]:
+    """MAIS may not be able to put all toegangscodes in a single table. Hence, we
+    need to click through the different pages ("account for pagination")."""
+    # high max. since we may need to find _all_ toegangscodes
+    page.get_by_role("button", name="Acties ").click()
+    page.get_by_role("menuitem", name="Rapport indeling").hover()
+    page.get_by_role("menuitem", name="Rijen per pagina").hover()
+    page.locator("span").filter(has_text=re.compile(r"^1000$")).click()
+    sleep(1)
+
+    toegangscodes = []
+    volgende_btn = page.get_by_role("button", name="Volgende")
+    toegangscodes.extend(_toegangscodes_in_table(page))
+    while volgende_btn.is_enabled():
+        volgende_btn.click()
+        sleep(4)
+        toegangscodes.extend(_toegangscodes_in_table(page))
+
+    return toegangscodes
 
 # TODO: get this from the table is kinda inefficient. You could rewrite this to
 # analyze the csv you get if you click "Acties>download rapport".
@@ -40,23 +57,9 @@ def list_toegangscodes(self, groepnaam: Optional[str | None] = None) -> list[str
             f"De toegangsgroep '{groepnaam}' lijkt niet te bestaan; "
             "zie `list_toegangsgroepen()` voor alle toegangsgroepen"
         )
+    # TODO: try to minimize sleep time
     sleep(4)
-
-    # high max. since we may need to find _all_ toegangscodes
-    self.page.get_by_role("button", name="Acties ").click()
-    self.page.get_by_role("menuitem", name="Rapport indeling").hover()
-    self.page.get_by_role("menuitem", name="Rijen per pagina").hover()
-    self.page.locator("span").filter(has_text=re.compile(r"^1000$")).click()
-    sleep(1)
-
-    toegangscodes = []
-    volgende_btn = self.page.get_by_role("button", name="Volgende")
-    toegangscodes.extend(_extract_toegangscodes_from_table(self.page))
-    while volgende_btn.is_enabled():
-        volgende_btn.click()
-        sleep(4)
-        toegangscodes.extend(_extract_toegangscodes_from_table(self.page))
-
+    toegangscodes = _all_toegangscodes_paginate(self.page)
     # TODO: is this log useful at all?
     log.info(
         f"{len(toegangscodes)} toegangscodes gevonden{' in ' + groepnaam if groepnaam else ''}"

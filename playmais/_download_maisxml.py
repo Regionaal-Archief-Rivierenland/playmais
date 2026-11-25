@@ -100,7 +100,7 @@ def download_maisxml_van_toegangscodes(self, toegangscodes: list[str], folder: s
     sleep(2)
     # cleanup filter we just applied
     self.page.get_by_role("button", name="Remove Filter").click()
-    sleep(3)
+    sleep(1)
 
 def download_maisxml_van_toegangsgroep(self, groepnaam: str, folder: str | Path):
     """Download alle MAIS XML uit een bepaalde toegangsgroep.
@@ -125,4 +125,4 @@ def download_maisxml_van_toegangsgroep(self, groepnaam: str, folder: str | Path)
     log.info(f"Toegangsgroep '{groepnaam}' is gedownload ✅")
     # Reset toegangsgroep filter
     self.page.get_by_label("Toegangsgroep").select_option("")
-    sleep(3)
+    sleep(1)

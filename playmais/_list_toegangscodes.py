@@ -20,7 +20,7 @@ def _extract_toegangscodes_from_table(page: Page) -> list[str]:
 # analyze the csv you get if you click "Acties>download rapport".
 # While the superior approach, this whole function isn't super useful atm
 @retry_on_playwright_error(retries=7, minutes_to_sleep=2, sleep_exponent=1)
-def list_toegangscodes(self, groepnaam: Optional[str | None] = None) -> set[str]:
+def list_toegangscodes(self, groepnaam: Optional[str | None] = None) -> list[str]:
     """Vind ("list") toegangscodes, bijvoorbeeld alle codes binnen de toegangsgroep
     `groepnaam`.
 
